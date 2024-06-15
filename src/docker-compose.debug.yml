@@ -1,0 +1,7 @@
+services:
+    identity-api:
+        build:
+            context: .
+            dockerfile: Services/Identity/Identity.Api/Dockerfile.debug
+        environment:
+            - ConnectionStrings__RelationalDatabase=Server=system-sql;port=5432;Database=identity;User Id=postgres;Password=postgres;

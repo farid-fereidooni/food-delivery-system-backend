@@ -1,0 +1,26 @@
+services:
+    system-sql:
+        image: postgres:16.2
+        environment:
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - system-sql-data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+
+    rabbit-mq:
+        image: rabbitmq:3-management
+        ports:
+            - 15672:15672
+
+    identity-api:
+        image: identity-api
+        build:
+            context: .
+            dockerfile: Services/Identity/Identity.Api/Dockerfile
+        ports:
+            - 5000:8080
+
+volumes:
+    system-sql-data:
+        external: false

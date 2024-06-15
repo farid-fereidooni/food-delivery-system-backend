@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+ARG BUILD_CONFIGURATION=Debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+EXPOSE 8080
+
+WORKDIR /src
+
+COPY ["Services/Identity/Identity.Api/Identity.Api.csproj", "Services/Identity/Identity.Api/"]
+COPY ["Services/Identity/Identity.Infrastructure/Identity.Infrastructure.csproj", "Services/Identity/Identity.Infrastructure/"]
+COPY ["Services/Identity/Identity.Core/Identity.Core.csproj", "Services/Identity/Identity.Core/"]
+
+COPY ["docker-compose.dcproj", "."]
+COPY ["FoodDeliverySystem.sln", "."]
+
+RUN dotnet restore "FoodDeliverySystem.sln" --verbosity n
+
+COPY ["Services/Identity", "Services/Identity"]
+WORKDIR "/src/Services/Identity/Identity.Api"
+RUN dotnet build -c $BUILD_CONFIGURATION
+
+ENTRYPOINT ["dotnet", "run", "--no-build", "--no-launch-profile", "--"]
