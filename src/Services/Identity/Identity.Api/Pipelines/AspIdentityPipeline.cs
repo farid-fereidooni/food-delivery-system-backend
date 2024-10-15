@@ -22,7 +22,7 @@ public static class AspIdentityPipeline
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.Password.RequiredLength = 6;
-            options.User.RequireUniqueEmail = true;
+            options.User.RequireUniqueEmail = false;
         });
 
         return builder;

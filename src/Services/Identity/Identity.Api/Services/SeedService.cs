@@ -1,6 +1,7 @@
 using Identity.Api.Utilities;
 using Identity.Core.Models;
 using Identity.Infrastructure.Database;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NuGet.Packaging;
@@ -14,10 +15,13 @@ public class SeedService : IHostedService
     private readonly IServiceProvider _services;
     private readonly ILogger<SeedService> _logger;
     private static readonly string[] AvailableClientTypes = ["public"];
+    private readonly RootUserConfiguration _rootUserConfig;
 
-    public SeedService(IServiceProvider services, ILogger<SeedService> logger)
+    public SeedService(
+        IServiceProvider services, IOptions<RootUserConfiguration> rootUserConfig, ILogger<SeedService> logger)
     {
         _services = services;
+        _rootUserConfig = rootUserConfig.Value;
         _logger = logger;
     }
 
@@ -29,8 +33,13 @@ public class SeedService : IHostedService
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var clientConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<ClientConfiguration>>();
 
+        var rootUserConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<RootUserConfiguration>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
         await MigrateDatabase(dbContext, _logger, cancellationToken);
         await BuildClients(manager, clientConfiguration, cancellationToken);
+
+        await SeedUsers(userManager, rootUserConfiguration);
     }
 
     private static async Task MigrateDatabase(DbContext dbContext, ILogger logger, CancellationToken cancellationToken)
@@ -72,6 +81,30 @@ public class SeedService : IHostedService
             };
             client.Permissions.AddRange(BuildPermissions(clientConfig.ClientType!));
             await manager.CreateAsync(client, cancellationToken);
+        }
+    }
+
+    private async Task SeedUsers(
+        UserManager<ApplicationUser> userManager, IOptions<RootUserConfiguration> rootUserConfiguration)
+    {
+        if (await userManager.FindByNameAsync(rootUserConfiguration.Value.UserName) is not null)
+            return;
+
+        var rootUser = new ApplicationUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = rootUserConfiguration.Value.UserName,
+            FirstName = rootUserConfiguration.Value.FirstName,
+            LastName = rootUserConfiguration.Value.LastName,
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+        };
+
+        var result = await userManager.CreateAsync(rootUser, rootUserConfiguration.Value.Password);
+        if (!result.Succeeded)
+        {
+            _logger.LogError(
+                "Creating root user failed with following errors: \n {errors}", string.Join("\n", result.Errors));
         }
     }
 
