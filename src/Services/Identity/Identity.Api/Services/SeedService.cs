@@ -96,6 +96,7 @@ public class SeedService : IHostedService
             UserName = rootUserConfiguration.Value.UserName,
             FirstName = rootUserConfiguration.Value.FirstName,
             LastName = rootUserConfiguration.Value.LastName,
+            Email = rootUserConfiguration.Value.Email,
             EmailConfirmed = true,
             PhoneNumberConfirmed = true,
         };
@@ -177,7 +178,7 @@ public class SeedService : IHostedService
             Permissions.GrantTypes.AuthorizationCode,
             Permissions.ResponseTypes.Code,
             Permissions.Scopes.Email,
-            Permissions.Scopes.Profile
+            Permissions.Scopes.Profile,
         ],
         _ => throw new ArgumentException($"Invalid client type: {clientType}")
     };

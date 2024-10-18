@@ -1,6 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using Identity.Core.Models;
 using Identity.Infrastructure.Database;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Identity.Api.Pipelines;
 
@@ -18,13 +19,16 @@ public static class OpenIdServerPipeline
             .AddServer(options =>
             {
                 options
-                    .SetTokenEndpointUris("connect/token")
                     .SetAuthorizationEndpointUris("connect/authorize")
+                    .SetTokenEndpointUris("connect/token")
+                    .SetUserinfoEndpointUris("connect/userinfo")
+                    .RegisterScopes(Scopes.Email, Scopes.Profile)
                     .AllowClientCredentialsFlow()
                     .AllowAuthorizationCodeFlow()
                     .AllowRefreshTokenFlow()
                     .UseAspNetCore()
                     .EnableAuthorizationEndpointPassthrough()
+                    .EnableTokenEndpointPassthrough()
                     .DisableTransportSecurityRequirement();
 
                 if (builder.Environment.IsDevelopment())

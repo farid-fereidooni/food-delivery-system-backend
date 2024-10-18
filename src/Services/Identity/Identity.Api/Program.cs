@@ -6,14 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
-
 builder.ConfigureSettings();
 builder.AddCustomEntityFrameworkCore();
 builder.ConfigureCors();
 builder.AddCustomOpenIdServer();
 builder.AddAspIdentity();
+
+builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<OpenIdDictAuthorizationService>();
 builder.Services.AddHostedService<SeedService>();

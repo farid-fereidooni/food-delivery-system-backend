@@ -206,7 +206,7 @@ public class OpenIdDictAuthorizationService
             case OpenIddictConstants.Claims.Name or OpenIddictConstants.Claims.PreferredUsername:
                 yield return OpenIddictConstants.Destinations.AccessToken;
 
-                if (claim.Subject?.HasScope(OpenIddictConstants.Permissions.Scopes.Profile) ?? false)
+                if (claim.Subject?.HasScope(OpenIddictConstants.Scopes.Profile) ?? false)
                     yield return OpenIddictConstants.Destinations.IdentityToken;
 
                 yield break;
@@ -214,7 +214,7 @@ public class OpenIdDictAuthorizationService
             case OpenIddictConstants.Claims.Email:
                 yield return OpenIddictConstants.Destinations.AccessToken;
 
-                if (claim.Subject?.HasScope(OpenIddictConstants.Permissions.Scopes.Email) ?? false)
+                if (claim.Subject?.HasScope(OpenIddictConstants.Scopes.Email) ?? false)
                     yield return OpenIddictConstants.Destinations.IdentityToken;
 
                 yield break;
@@ -222,7 +222,7 @@ public class OpenIdDictAuthorizationService
             case OpenIddictConstants.Claims.Role:
                 yield return OpenIddictConstants.Destinations.AccessToken;
 
-                if (claim.Subject?.HasScope(OpenIddictConstants.Permissions.Scopes.Roles) ?? false)
+                if (claim.Subject?.HasScope(OpenIddictConstants.Scopes.Roles) ?? false)
                     yield return OpenIddictConstants.Destinations.IdentityToken;
 
                 yield break;
