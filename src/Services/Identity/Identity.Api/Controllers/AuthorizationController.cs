@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using AuthorizeResult =
-    Identity.Core.Models.Result<System.Security.Claims.ClaimsIdentity, Identity.Core.Models.IOpenIdAuthorizeError>;
-using ExchangeResult =
-    Identity.Core.Models.Result<System.Security.Claims.ClaimsIdentity, Identity.Core.Models.IOpenIdExchangeError>;
 
 namespace Identity.Api.Controllers;
 
@@ -26,28 +22,23 @@ public class AuthorizationController : Controller
     {
         var authorizeResult = await _authorizationService.Authorize();
 
-        return authorizeResult switch
-        {
-            AuthorizeResult.Ok ok =>
-                SignIn(new ClaimsPrincipal(ok.Value), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme),
-            AuthorizeResult.Error err =>
-                err.Value switch
-                {
-                    IOpenIdAuthorizeError.LoginRequired =>
-                        Forbid(Errors.LoginRequired, "The user is not logged in."),
-                    IOpenIdAuthorizeError.DoLogin doLogin =>
-                        Challenge(new AuthenticationProperties
-                        {
-                            RedirectUri = doLogin.RedirectUrl
-                        }),
-                    IOpenIdAuthorizeError.InvalidClient invalidClient =>
-                        Forbid(Errors.InvalidClient, invalidClient.Message),
-                    IOpenIdAuthorizeError.ConsentRequired consentRequired =>
-                        Forbid(Errors.ConsentRequired, consentRequired.Message),
-                    _ => throw new ArgumentOutOfRangeException()
-                },
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        return authorizeResult.Match(
+            identity => SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme),
+            error => error switch
+            {
+                OpenIdAuthorizeError.LoginRequired =>
+                    Forbid(Errors.LoginRequired, "The user is not logged in."),
+                OpenIdAuthorizeError.DoLogin doLogin =>
+                    Challenge(new AuthenticationProperties
+                    {
+                        RedirectUri = doLogin.RedirectUrl
+                    }),
+                OpenIdAuthorizeError.InvalidClient invalidClient =>
+                    Forbid(Errors.InvalidClient, invalidClient.Message),
+                OpenIdAuthorizeError.ConsentRequired consentRequired =>
+                    Forbid(Errors.ConsentRequired, consentRequired.Message),
+                _ => throw new ArgumentOutOfRangeException()
+            });
     }
 
     [HttpPost("~/connect/token")]
@@ -57,20 +48,15 @@ public class AuthorizationController : Controller
     {
         var exchangeResult = await _authorizationService.Exchange();
 
-        return exchangeResult switch
-        {
-            ExchangeResult.Ok ok =>
-                SignIn(new ClaimsPrincipal(ok.Value), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme),
-            ExchangeResult.Error err =>
-                err.Value switch
-                {
-                    IOpenIdExchangeError.InvalidGrant => Forbid(Errors.InvalidGrant, string.Empty),
-                    IOpenIdExchangeError.InvalidToken invalidToken => Forbid(Errors.InvalidGrant, invalidToken.Message),
-                    IOpenIdExchangeError.InvalidUser invalidUser => Forbid(Errors.InvalidGrant, invalidUser.Message),
-                    _ => throw new ArgumentOutOfRangeException()
-                },
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        return exchangeResult.Match(
+            identity => SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme),
+            error => error switch
+            {
+                OpenIdExchangeError.InvalidGrant => Forbid(Errors.InvalidGrant, string.Empty),
+                OpenIdExchangeError.InvalidToken invalidToken => Forbid(Errors.InvalidGrant, invalidToken.Message),
+                OpenIdExchangeError.InvalidUser invalidUser => Forbid(Errors.InvalidGrant, invalidUser.Message),
+                _ => throw new ArgumentOutOfRangeException()
+            });
     }
 
     private IActionResult Forbid(string error, string errorDescription)

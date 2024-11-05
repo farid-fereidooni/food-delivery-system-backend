@@ -8,10 +8,6 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using AuthorizeResult =
-    Identity.Core.Models.Result<System.Security.Claims.ClaimsIdentity, Identity.Core.Models.IOpenIdAuthorizeError>;
-using ExchangeResult =
-    Identity.Core.Models.Result<System.Security.Claims.ClaimsIdentity, Identity.Core.Models.IOpenIdExchangeError>;
 
 namespace Identity.Api.Services;
 
@@ -40,7 +36,7 @@ public class OpenIdDictAuthorizationService
         _httpContext = httpContextAccessor.HttpContext!;
     }
 
-    public async Task<AuthorizeResult> Authorize()
+    public async Task<Result<ClaimsIdentity, OpenIdAuthorizeError>> Authorize()
     {
         var request = _httpContext.GetOpenIddictServerRequest() ??
             throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
@@ -50,7 +46,7 @@ public class OpenIdDictAuthorizationService
         if(!IsUserLoggedIn(request, authenticationResult) || request.HasPrompt(OpenIddictConstants.Prompts.Login))
         {
             if (request.HasPrompt(OpenIddictConstants.Prompts.None))
-                return new AuthorizeResult.Error("Authorization failed", new IOpenIdAuthorizeError.LoginRequired());
+                return new OpenIdAuthorizeError.LoginRequired();
 
             var prompt = string.Join(" ", request.GetPrompts().Remove(OpenIddictConstants.Prompts.Login));
 
@@ -66,20 +62,18 @@ public class OpenIdDictAuthorizationService
                 + _httpContext.Request.Path
                 + QueryString.Create(parameters);
 
-            return new AuthorizeResult.Error("Authorization failed", new IOpenIdAuthorizeError.DoLogin(redirectUrl));
+            return new OpenIdAuthorizeError.DoLogin(redirectUrl);
         }
 
         var user = await _userManager.GetUserAsync(authenticationResult.Principal!) ??
             throw new InvalidOperationException("The user details cannot be retrieved.");
 
         if (string.IsNullOrEmpty(request.ClientId))
-            return new AuthorizeResult.Error(
-                "Authorization failed", new IOpenIdAuthorizeError.InvalidClient("Client ID is required."));
+            return new OpenIdAuthorizeError.InvalidClient("Client ID is required.");
 
         var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
         if (application is null)
-            return new AuthorizeResult.Error(
-                "Authorization failed", new IOpenIdAuthorizeError.InvalidClient("Invalid client ID."));
+            return new OpenIdAuthorizeError.DoLogin("Invalid client ID.");
 
         var applicationId = await _applicationManager.GetIdAsync(application);
         if (applicationId is null)
@@ -96,10 +90,8 @@ public class OpenIdDictAuthorizationService
         switch (await _applicationManager.GetConsentTypeAsync(application))
         {
             case OpenIddictConstants.ConsentTypes.External when authorizations.Count is 0:
-                return new AuthorizeResult.Error(
-                    "Authorization failed",
-                    new IOpenIdAuthorizeError.ConsentRequired(
-                        "The logged in user is not allowed to access this client application."));
+                return new OpenIdAuthorizeError.ConsentRequired(
+                    "The logged in user is not allowed to access this client application.");
 
             case OpenIddictConstants.ConsentTypes.Implicit:
             case OpenIddictConstants.ConsentTypes.External when authorizations.Count is not 0:
@@ -131,46 +123,38 @@ public class OpenIdDictAuthorizationService
                 identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
                 identity.SetDestinations(GetDestinations);
 
-                return new AuthorizeResult.Ok(identity);
+                return identity;
 
             case OpenIddictConstants.ConsentTypes.Explicit when request.HasPrompt(OpenIddictConstants.Prompts.None):
             case OpenIddictConstants.ConsentTypes.Systematic when request.HasPrompt(OpenIddictConstants.Prompts.None):
-                return new AuthorizeResult.Error(
-                    "Authorization failed",
-                    new IOpenIdAuthorizeError.ConsentRequired("Interactive user consent is required."));
+                return new OpenIdAuthorizeError.ConsentRequired("Interactive user consent is required.");
 
             // In every other case, render the consent form.
             default: throw new NotImplementedException("Explicit consent is not supported");
         }
     }
 
-    public async Task<ExchangeResult> Exchange()
+    public async Task<Result<ClaimsIdentity, OpenIdExchangeError>> Exchange()
     {
         var request = _httpContext.GetOpenIddictServerRequest() ??
                       throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
         if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
-            return new ExchangeResult.Error(
-                "The specified grant type is not supported.", new IOpenIdExchangeError.InvalidGrant());
+            return new OpenIdExchangeError.InvalidGrant();
 
         var authenticationResult = await _httpContext.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
         var subjectId = authenticationResult.Principal?.GetClaim(OpenIddictConstants.Claims.Subject);
         if (authenticationResult.Principal is null || subjectId is null)
-            return new ExchangeResult.Error(
-                "Exchange Failed", new IOpenIdExchangeError.InvalidToken("The token is no longer valid."));
+            return new OpenIdExchangeError.InvalidToken("The token is no longer valid.");
 
         var user = await _userManager.FindByIdAsync(subjectId);
         if (user is null)
-            return new ExchangeResult.Error(
-                "Exchange Failed", new IOpenIdExchangeError.InvalidToken("The token is no longer valid."));
+            return new OpenIdExchangeError.InvalidToken("The token is no longer valid.");
 
         if (!await _signInManager.CanSignInAsync(user))
-        {
-            return new ExchangeResult.Error(
-                "Exchange Failed", new IOpenIdExchangeError.InvalidToken("The user is no longer allowed to sign in."));
-        }
+            return new OpenIdExchangeError.InvalidToken("The user is no longer allowed to sign in.");
 
         var identity = new ClaimsIdentity(authenticationResult.Principal.Claims,
             authenticationType: TokenValidationParameters.DefaultAuthenticationType,
@@ -185,7 +169,7 @@ public class OpenIdDictAuthorizationService
 
         identity.SetDestinations(GetDestinations);
 
-        return new ExchangeResult.Ok(identity);
+        return identity;
     }
 
 
