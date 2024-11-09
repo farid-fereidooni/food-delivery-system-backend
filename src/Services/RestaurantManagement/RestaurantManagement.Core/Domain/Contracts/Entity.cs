@@ -4,11 +4,9 @@ namespace RestaurantManagement.Core.Domain.Contracts;
 
 public abstract class Entity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-
-    protected uint Version { get; set; }
 
     private List<IDomainEvent>? _domainEvents;
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly()
@@ -63,7 +61,7 @@ public abstract class Entity
         return base.GetHashCode();
     }
 
-    public static bool operator ==(Entity left, Entity right)
+    public static bool operator ==(Entity? left, Entity? right)
     {
         if (Equals(left, null))
             return Equals(right, null);
@@ -71,7 +69,7 @@ public abstract class Entity
         return left.Equals(right);
     }
 
-    public static bool operator !=(Entity left, Entity right)
+    public static bool operator !=(Entity? left, Entity? right)
     {
         return !(left == right);
     }

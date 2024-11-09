@@ -34,6 +34,36 @@ public struct Result : IResult
         return _error.Value;
     }
 
+    public Result<TValue> And<TValue>(TValue value)
+    {
+        return IsSuccess ? value : _error.Value;
+    }
+
+    public Result<TValue> And<TValue>(Error error)
+    {
+        return IsSuccess ? error : _error.Value;
+    }
+
+    public Result<TValue> And<TValue>(Result<TValue> result)
+    {
+        return IsSuccess ? result : _error.Value;
+    }
+
+    public Result<TValue> AndThen<TValue>(Func<TValue> value)
+    {
+        return IsSuccess ? value() : _error.Value;
+    }
+
+    public Result<TValue> AndThen<TValue>(Func<Error> value)
+    {
+        return IsSuccess ? value() : _error.Value;
+    }
+
+    public Result<TValue> AndThen<TValue>(Func<Result<TValue>> value)
+    {
+        return IsSuccess ? value() : _error.Value;
+    }
+
     public static Result Success() => new Result();
     public static Result Error(Error error) => new Result { _error = error };
 
@@ -171,6 +201,14 @@ public struct Result<T> : IResult<T, Error>
         return _result.Case();
     }
 
+    public static implicit operator Result<T>(Result<T, IError> result)
+    {
+        return result.Match(
+            value => new Result<T> { _result = value },
+            error => new Result<T> { _result = new Error(error.Messages) });
+    }
+
+    public static implicit operator Result<T>(Result<T, Error> result) => new() { _result = result };
     public static implicit operator Result<T>(Error error) => new() { _result = error };
     public static implicit operator Result<T>(T value) => new() { _result = value };
 }
@@ -190,6 +228,10 @@ public interface IError
 
 public struct Error : IError
 {
+    public Error()
+    {
+    }
+
     public Error(ErrorReason reason)
     {
         Reason = reason;

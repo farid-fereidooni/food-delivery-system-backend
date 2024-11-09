@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Validation_PriceShouldNotBeNegative" xml:space="preserve">
+        <value>Price should not be negative value.</value>
+    </data>
+    <data name="Validation_MaxMenuItemReached" xml:space="preserve">
+        <value>Max number of menu item has been reached.</value>
+    </data>
+    <data name="Validation_CannotDecreaseStock" xml:space="preserve">
+        <value>Cannot decrease more than current stock</value>
+    </data>
+    <data name="Validation_RestaurantNameShouldBeUnique" xml:space="preserve">
+        <value>Restaurant name should be unique</value>
+    </data>
+    <data name="Validation_MaximumNumberOfRestaurant" xml:space="preserve">
+        <value>Maximum number of restaurant is reached</value>
+    </data>
+    <data name="Handler_YouAreNotOwner" xml:space="preserve">
+        <value />
+    </data>
+</root>
