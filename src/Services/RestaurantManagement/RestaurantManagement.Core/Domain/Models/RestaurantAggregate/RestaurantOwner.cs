@@ -48,5 +48,30 @@ public class RestaurantOwner : AggregateRoot
         return restaurant.Id;
     }
 
+    public void UpdateRestaurantInfo(Guid restaurantId, string newName, Address newAddress)
+    {
+        var restaurant = GetRestaurant(restaurantId);
+        restaurant.UpdateInfo(newName, newAddress);
+    }
+
+    public void ActivateRestaurant(Guid restaurantId)
+    {
+        var restaurant = GetRestaurant(restaurantId);
+        restaurant.Activate();
+    }
+
+    public void DeactivateRestaurant(Guid restaurantId)
+    {
+        var restaurant = GetRestaurant(restaurantId);
+        restaurant.Deactivate();
+    }
+
+    private Restaurant GetRestaurant(Guid restaurantId)
+    {
+        return _restaurantDictionary.TryGetValue(restaurantId, out var restaurant)
+            ? restaurant
+            : throw InvalidDomainOperationException.Create("Restaurant does not exist.");
+    }
+
     public bool HasRestaurants() => Restaurants.Count != 0;
 }
