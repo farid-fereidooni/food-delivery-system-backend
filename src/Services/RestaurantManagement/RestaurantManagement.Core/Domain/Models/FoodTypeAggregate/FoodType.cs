@@ -14,4 +14,6 @@ public class FoodType : AggregateRoot
     }
 
     public string Name { get; private set; } = null!;
+
+    public void Rename(string newName) => Name = newName;
 }

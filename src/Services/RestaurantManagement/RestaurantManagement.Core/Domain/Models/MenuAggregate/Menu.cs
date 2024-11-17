@@ -35,8 +35,10 @@ public class Menu : AggregateRoot, IConcurrentSafe
     public Result CanAddMenuItem(Guid categoryId, Guid foodId)
     {
         if (MenuItems.Count >= MaxMenuItemLength)
-            return new Error(
-                nameof(CommonResource.Validation_MaxMenuItemReached), CommonResource.Validation_MaxMenuItemReached);
+            return new Error(CommonResource.Validation_MaxMenuItemReached);
+
+        if (MenuItems.Any(x => x.CategoryId == categoryId && x.FoodId == foodId))
+            return new Error(CommonResource.App_DuplicatedMenuItem);
 
         return Result.Success();
     }
@@ -48,6 +50,17 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
         var menuItem = new MenuItem(categoryId, foodId);
         return menuItem.Id;
+    }
+
+    public void ChangeMenuItemCategory(Guid menuItemId, Guid newCategoryId)
+    {
+       var menuItem = GetMenuItem(menuItemId);
+       menuItem.ChangeCategory(newCategoryId);
+    }
+
+    public void RemoveMenuItem(Guid menuItemId)
+    {
+        _menuItemDictionary.Remove(menuItemId);
     }
 
     public void AddStock(Guid menuItemId, uint number)

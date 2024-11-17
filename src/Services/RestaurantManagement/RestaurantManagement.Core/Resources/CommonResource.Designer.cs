@@ -75,9 +75,75 @@ namespace RestaurantManagement.Core.Resources {
             }
         }
         
-        public static string Handler_YouAreNotOwner {
+        public static string App_YouAreNotOwner {
             get {
-                return ResourceManager.GetString("Handler_YouAreNotOwner", resourceCulture);
+                return ResourceManager.GetString("App_YouAreNotOwner", resourceCulture);
+            }
+        }
+        
+        public static string App_YouAreAlreadyOwner {
+            get {
+                return ResourceManager.GetString("App_YouAreAlreadyOwner", resourceCulture);
+            }
+        }
+        
+        public static string App_CategoryAlreadyExists {
+            get {
+                return ResourceManager.GetString("App_CategoryAlreadyExists", resourceCulture);
+            }
+        }
+        
+        public static string App_FoodNameAlreadyExists {
+            get {
+                return ResourceManager.GetString("App_FoodNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        public static string App_FoodNotFound {
+            get {
+                return ResourceManager.GetString("App_FoodNotFound", resourceCulture);
+            }
+        }
+        
+        public static string App_InvalidFoodTypes {
+            get {
+                return ResourceManager.GetString("App_InvalidFoodTypes", resourceCulture);
+            }
+        }
+        
+        public static string App_FoodIsAlreadyUsed {
+            get {
+                return ResourceManager.GetString("App_FoodIsAlreadyUsed", resourceCulture);
+            }
+        }
+        
+        public static string App_FoodTypeNotFound {
+            get {
+                return ResourceManager.GetString("App_FoodTypeNotFound", resourceCulture);
+            }
+        }
+        
+        public static string App_MenuNotFound {
+            get {
+                return ResourceManager.GetString("App_MenuNotFound", resourceCulture);
+            }
+        }
+        
+        public static string App_DuplicatedMenuItem {
+            get {
+                return ResourceManager.GetString("App_DuplicatedMenuItem", resourceCulture);
+            }
+        }
+        
+        public static string General_Canceled {
+            get {
+                return ResourceManager.GetString("General_Canceled", resourceCulture);
+            }
+        }
+        
+        public static string App_CategoryNotFound {
+            get {
+                return ResourceManager.GetString("App_CategoryNotFound", resourceCulture);
             }
         }
     }

@@ -23,9 +23,7 @@ public record struct FoodSpecification : IValueObject
     public static Result Validate(string name, decimal price, string? description = null)
     {
         if (price < 0)
-            return new Error(
-                nameof(CommonResource.Validation_PriceShouldNotBeNegative),
-                CommonResource.Validation_PriceShouldNotBeNegative);
+            return new Error(CommonResource.Validation_PriceShouldNotBeNegative);
 
         return Result.Success();
     }

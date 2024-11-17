@@ -29,25 +29,23 @@ public class RestaurantOwner : AggregateRoot
         var error = new Error();
 
         if (_restaurantDictionary.Count >= MaxRestaurantCount)
-            error.AddMessage(
-                nameof(CommonResource.Validation_MaximumNumberOfRestaurant),
-                CommonResource.Validation_MaximumNumberOfRestaurant);
+            error.AddMessage(CommonResource.Validation_MaximumNumberOfRestaurant, nameof(CommonResource.Validation_MaximumNumberOfRestaurant));
 
         if (_restaurantDictionary.Values.Any(x => x.Name == name))
-            error.AddMessage(
-                nameof(CommonResource.Validation_RestaurantNameShouldBeUnique),
-                CommonResource.Validation_RestaurantNameShouldBeUnique);
+            error.AddMessage(CommonResource.Validation_RestaurantNameShouldBeUnique, nameof(CommonResource.Validation_RestaurantNameShouldBeUnique));
 
         return error.IsEmpty ? Result.Success() : error;
     }
 
-    public void AddRestaurant(string name, Address address)
+    public Guid AddRestaurant(string name, Address address)
     {
         var validation = CanAddRestaurant(name, address);
         InvalidDomainStateException.ThrowIfError(validation);
 
         var restaurant = new Restaurant(name, address, Id);
         _restaurantDictionary.Add(restaurant.Id, restaurant);
+
+        return restaurant.Id;
     }
 
     public bool HasRestaurants() => Restaurants.Count != 0;

@@ -8,7 +8,8 @@ public class InvalidDomainOperationException : DomainException
     {
     }
 
-    public static void ThrowIfError(IResult result)
+    public static void ThrowIfError<TError>(IResult<TError> result)
+        where TError : IError
     {
         if (result.IsSuccess)
             return;

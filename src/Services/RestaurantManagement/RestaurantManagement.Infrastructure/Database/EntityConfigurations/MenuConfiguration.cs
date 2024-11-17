@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RestaurantManagement.Core.Domain.Models;
 using RestaurantManagement.Core.Domain.Models.MenuAggregate;
 using RestaurantManagement.Core.Domain.Models.MenuCategoryAggregate;
 using RestaurantManagement.Core.Domain.Models.RestaurantAggregate;
@@ -27,5 +26,7 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
         builder.HasOne<MenuCategory>()
             .WithMany()
             .HasForeignKey(x => x.CategoryId);
+
+        builder.HasIndex(i => new { i.MenuId, i.CategoryId, i.FoodId}).IsUnique();
     }
 }

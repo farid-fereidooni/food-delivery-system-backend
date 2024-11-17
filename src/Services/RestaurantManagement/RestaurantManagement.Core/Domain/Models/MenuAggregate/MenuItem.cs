@@ -39,8 +39,7 @@ public class MenuItem : Entity, IConcurrentSafe
     public Result CanDecreaseStock(uint number)
     {
         if (Stock < number)
-            return new Error(
-                nameof(CommonResource.Validation_CannotDecreaseStock), CommonResource.Validation_CannotDecreaseStock);
+            return new Error(CommonResource.Validation_CannotDecreaseStock);
 
         return Result.Success();
     }

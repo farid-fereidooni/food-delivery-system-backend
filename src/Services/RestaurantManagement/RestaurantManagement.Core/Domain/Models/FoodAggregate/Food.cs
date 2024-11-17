@@ -24,7 +24,7 @@ public class Food : AggregateRoot
 
     public FoodSpecification Specification { get; private set; }
 
-    public void UpdateFoodSpecification(Guid menuItemId, FoodSpecification specification)
+    public void UpdateFoodSpecification(FoodSpecification specification)
     {
         Specification = specification;
     }

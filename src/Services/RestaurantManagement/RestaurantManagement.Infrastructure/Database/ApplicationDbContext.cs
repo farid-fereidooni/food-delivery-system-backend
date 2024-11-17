@@ -12,11 +12,13 @@ namespace RestaurantManagement.Infrastructure.Database;
 
 public class ApplicationDbContext(DbContextOptions options, IMediator _mediator) : DbContext(options), IUnitOfWork
 {
+    public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<RestaurantOwner> RestaurantOwners { get; set; }
-    public DbSet<Menu> Menus { get; set; }
-    public DbSet<MenuCategory> MenuCategories { get; set; }
+    public DbSet<Menu> Menus { get; }
+    public DbSet<MenuItem> MenuItems { get; }
+    public DbSet<MenuCategory> MenuCategories { get; }
     public DbSet<Food> Foods { get; set; }
-    public DbSet<FoodType> FoodTypes { get; set; }
+    public DbSet<FoodType> FoodTypes { get; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

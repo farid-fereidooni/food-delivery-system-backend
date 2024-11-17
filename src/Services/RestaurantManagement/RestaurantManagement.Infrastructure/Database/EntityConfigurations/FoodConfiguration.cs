@@ -10,11 +10,15 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
     public void Configure(EntityTypeBuilder<Food> builder)
     {
         builder.ComplexProperty(c => c.Specification);
+        builder.HasIndex(p => p.Specification.Name).IsUnique();
 
         builder.HasMany<FoodType>()
             .WithMany()
             .UsingEntity<FoodTypeFood>(
-                l => l.HasOne<FoodType>().WithMany().HasForeignKey(f => f.FoodTypeId),
-                r => r.HasOne<Food>().WithMany("FoodTypeFoods").HasForeignKey(f => f.FoodId));
+                l => l.HasOne<FoodType>().WithMany().HasForeignKey(f => f.FoodTypeId).OnDelete(DeleteBehavior.Cascade),
+                r => r.HasOne<Food>()
+                    .WithMany("FoodTypeFoods")
+                    .HasForeignKey(f => f.FoodId)
+                    .OnDelete(DeleteBehavior.Cascade));
     }
 }

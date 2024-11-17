@@ -1,7 +1,9 @@
+using RestaurantManagement.Core.Domain.Dtos;
+
 namespace RestaurantManagement.Core.Domain.Contracts;
 
 public interface IAuthService
 {
     Task<bool> IsAuthenticated();
-    Task<Guid> CurrentUserId();
+    Task<Result<Guid>> CurrentUserId();
 }
