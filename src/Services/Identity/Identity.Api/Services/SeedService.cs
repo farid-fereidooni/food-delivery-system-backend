@@ -56,8 +56,9 @@ public class SeedService : IHostedService
         IOptions<ClientConfiguration> config,
         CancellationToken cancellationToken)
     {
-        foreach (var clientConfig in config.Value.Clients)
+        foreach (var item in config.Value.Clients)
         {
+            var clientConfig = item.Value;
             if (!ValidateClient(clientConfig))
                 continue;
 
@@ -67,6 +68,7 @@ public class SeedService : IHostedService
             var client = new OpenIddictApplicationDescriptor
             {
                 ClientId = clientConfig.ClientId,
+                ClientSecret = clientConfig.ClientSecret,
                 DisplayName = clientConfig.DisplayName,
                 ClientType = clientConfig.ClientType,
                 ConsentType = ConsentTypes.Implicit,
@@ -79,8 +81,54 @@ public class SeedService : IHostedService
                     new Uri(Path.Combine(clientConfig.Host!, clientConfig.LogoutPath!.TrimStart('/')))
                 }
             };
+
             client.Permissions.AddRange(BuildPermissions(clientConfig.ClientType!));
+            client.Permissions.AddRange(clientConfig.AdditionalScopes.Select(s => Permissions.Prefixes.Scope + s));
+
             await manager.CreateAsync(client, cancellationToken);
+        }
+    }
+
+    private async Task BuildApiClients(
+        IOpenIddictApplicationManager clientManager,
+        IOpenIddictScopeManager scopeManager,
+        IOptions<ClientConfiguration> config,
+        CancellationToken cancellationToken)
+    {
+        foreach (var item in config.Value.ApiClients)
+        {
+            var clientConfig = item.Value;
+            if (!ValidateApiClient(clientConfig))
+                continue;
+
+            if (await clientManager.FindByClientIdAsync(clientConfig.ClientId!, cancellationToken) is not null)
+                continue;
+
+            var client = new OpenIddictApplicationDescriptor
+            {
+                ClientId = clientConfig.ClientId,
+                ClientSecret = clientConfig.ClientSecret,
+                DisplayName = clientConfig.DisplayName,
+                Permissions =
+                {
+                    Permissions.Endpoints.Introspection,
+                }
+            };
+            await clientManager.CreateAsync(client, cancellationToken);
+
+            if (await scopeManager.FindByNameAsync("api1", cancellationToken) is null)
+            {
+                var scope = new OpenIddictScopeDescriptor
+                {
+                    Name = clientConfig.ScopeName,
+                    Resources =
+                    {
+                        "resource_server_1"
+                    }
+                };
+
+                await scopeManager.CreateAsync(scope, cancellationToken);
+            }
         }
     }
 
@@ -161,6 +209,34 @@ public class SeedService : IHostedService
             _logger.LogError(
                 "Invalid logout path: \"{RedirectPath}\" for client ID \"{clientId}\"",
                 client.RedirectPath,
+                client.ClientId);
+            hasError = true;
+        }
+
+        return !hasError;
+    }
+
+    private bool ValidateApiClient(ApiClientItem client)
+    {
+        var hasError = false;
+
+        if (string.IsNullOrWhiteSpace(client.ClientId))
+        {
+            _logger.LogError("Invalid client ID: \"{ClientId}\"", client.ClientId);
+            hasError = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(client.ScopeName))
+        {
+            _logger.LogError("Invalid client ID: \"{ScopeName}\"", client.ScopeName);
+            hasError = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(client.DisplayName))
+        {
+            _logger.LogError(
+                "Invalid display name: \"{DisplayName}\" for client ID \"{ClientId}\"",
+                client.DisplayName,
                 client.ClientId);
             hasError = true;
         }
