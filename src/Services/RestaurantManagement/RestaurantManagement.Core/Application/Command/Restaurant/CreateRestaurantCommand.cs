@@ -6,7 +6,12 @@ using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Core.Application.Command.Restaurant;
 
-public record CreateRestaurantCommand(string Name, Address Address) : IRequest<Result<EntityCreatedDto>>;
+public record CreateRestaurantCommand(
+    string Name,
+    string Street,
+    string City,
+    string State,
+    string ZipCode) : IRequest<Result<EntityCreatedDto>>;
 
 public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCommand, Result<EntityCreatedDto>>
 {
@@ -35,11 +40,12 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
         if (owner is null)
             return new Error(CommonResource.App_YouAreNotOwner);
 
+        var address = Address.Create(request.Street, request.City, request.State, request.ZipCode);
         return await owner
-            .CanAddRestaurant(request.Name, request.Address)
+            .CanAddRestaurant(request.Name, address)
             .AndThenAsync(async () =>
             {
-                var restaurantId = owner.AddRestaurant(request.Name, request.Address);
+                var restaurantId = owner.AddRestaurant(request.Name, address);
                 await _unitOfWork.CommitAsync(cancellationToken);
                 return EntityCreatedDto.From(restaurantId);
             });

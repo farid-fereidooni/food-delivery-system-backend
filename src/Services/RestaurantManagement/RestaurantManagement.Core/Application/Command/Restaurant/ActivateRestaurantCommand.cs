@@ -1,12 +1,11 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
-using RestaurantManagement.Core.Domain.ValueObjects;
 using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Core.Application.Command.Restaurant;
 
-public record ActivateRestaurantCommand(Guid Id, string Name, Address Address) : IRequest<Result>;
+public record ActivateRestaurantCommand(Guid Id) : IRequest<Result>;
 
 public class ActivateRestaurantCommandHandler : IRequestHandler<ActivateRestaurantCommand, Result>
 {

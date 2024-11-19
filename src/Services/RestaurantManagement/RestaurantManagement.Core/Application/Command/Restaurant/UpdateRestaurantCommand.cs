@@ -6,7 +6,13 @@ using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Core.Application.Command.Restaurant;
 
-public record UpdateRestaurantCommand(Guid Id, string Name, Address Address) : IRequest<Result>;
+public record UpdateRestaurantCommand(
+    Guid Id,
+    string Name,
+    string Street,
+    string City,
+    string State,
+    string ZipCode) : IRequest<Result>;
 
 public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCommand, Result>
 {
@@ -35,7 +41,8 @@ public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCo
         if (owner is null)
             return new Error(CommonResource.App_YouAreNotOwner);
 
-        owner.UpdateRestaurantInfo(request.Id, request.Name, request.Address);
+        var address = Address.Create(request.Street, request.City, request.State, request.ZipCode);
+        owner.UpdateRestaurantInfo(request.Id, request.Name, address);
         await _unitOfWork.CommitAsync(cancellationToken);
 
         return Result.Success();
