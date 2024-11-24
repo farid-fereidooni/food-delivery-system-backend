@@ -1,10 +1,13 @@
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Api.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using RestaurantManagement.Api.Dtos;
 using RestaurantManagement.Core.Domain.Dtos;
 
 namespace RestaurantManagement.Api.Helpers;
 
-public static class ApiHelpers
+public static partial class ApiHelpers
 {
     public static IActionResult ToApiResponse(this Result result)
     {
@@ -34,5 +37,32 @@ public static class ApiHelpers
             },
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    public static string FormatError(this string error, [CallerArgumentExpression("error")] string? code = null)
+    {
+        if (string.IsNullOrEmpty(code))
+            throw new ArgumentException("Code not specified for error");
+
+        return $"[{code}] {error}";
+    }
+
+    [GeneratedRegex(@"(\[.+\])\s?(.+)")]
+    private static partial Regex ErrorFormatRegex();
+
+    public static IActionResult ToErrorResult(this ModelStateDictionary modelStateDictionary)
+    {
+        var messages = modelStateDictionary.Values.SelectMany(s =>
+            s.Errors.Select(err =>
+            {
+                var errorFormatMatch = ErrorFormatRegex().Match(err.ErrorMessage);
+                if (errorFormatMatch is { Success: true, Groups.Count: 2 })
+                    return new Message(errorFormatMatch.Groups[1].Value, errorFormatMatch.Groups[0].Value);
+
+                return new Message(err.ErrorMessage, "ValidationError");
+            })
+        );
+
+        return CreateErrorResponse(new Error(messages));
     }
 }
