@@ -1,14 +1,20 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Identity.Core.Models;
 
-public interface IResult
+public interface IResult;
+
+public interface IResult<out TError>: IResult where TError : IError
 {
     bool IsSuccess { get; }
     bool IsFailure { get; }
-    IError UnwrapError();
+    TError UnwrapError();
+    TResponse Match<TResponse>(Func<TResponse> onSuccess, Func<TError, TResponse> onFailure);
+    ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure);
 }
-public struct Result : IResult
+public struct Result : IResult<Error>
 {
     private Error? _error;
 
@@ -21,9 +27,10 @@ public struct Result : IResult
         return IsSuccess ? onSuccess() : onFailure(_error.Value);
     }
 
-    IError IResult.UnwrapError()
+    public async ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<Task<TResponse>> onSuccess, Func<Error, Task<TResponse>> onFailure)
     {
-        return UnwrapError();
+        return IsSuccess ? await onSuccess() : await onFailure(_error.Value);
     }
 
     public Error UnwrapError()
@@ -34,35 +41,6 @@ public struct Result : IResult
         return _error.Value;
     }
 
-    public Result<TValue> And<TValue>(TValue value)
-    {
-        return IsSuccess ? value : _error.Value;
-    }
-
-    public Result<TValue> And<TValue>(Error error)
-    {
-        return IsSuccess ? error : _error.Value;
-    }
-
-    public Result<TValue> And<TValue>(Result<TValue> result)
-    {
-        return IsSuccess ? result : _error.Value;
-    }
-
-    public Result<TValue> AndThen<TValue>(Func<TValue> value)
-    {
-        return IsSuccess ? value() : _error.Value;
-    }
-
-    public Result<TValue> AndThen<TValue>(Func<Error> value)
-    {
-        return IsSuccess ? value() : _error.Value;
-    }
-
-    public Result<TValue> AndThen<TValue>(Func<Result<TValue>> value)
-    {
-        return IsSuccess ? value() : _error.Value;
-    }
 
     public static Result Success() => new Result();
     public static Result Error(Error error) => new Result { _error = error };
@@ -76,10 +54,12 @@ public struct Result : IResult
 
 }
 
-public interface IResult<TValue, out TError> : IResult
+public interface IResult<TValue, out TError> : IResult<TError>
     where TError : IError
 {
     TResponse Match<TResponse>(Func<TValue, TResponse> onSuccess, Func<TError, TResponse> onFailure);
+    ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<TValue, Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure);
 
     TValue Unwrap();
     TValue UnwrapOr(TValue value);
@@ -93,16 +73,33 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
     where TError : IError
 {
     private TError _error;
-    private TValue _value;
+    private TValue? _value;
 
     [MemberNotNullWhen(false, nameof(_error))]
     [MemberNotNullWhen(true, nameof(_value))]
-    public bool IsSuccess { get; }
+    public bool IsSuccess { get; private init; }
     public bool IsFailure => !IsSuccess;
+
+    public TResponse Match<TResponse>(Func<TResponse> onSuccess, Func<TError, TResponse> onFailure)
+    {
+        return IsSuccess ? onSuccess() : onFailure(_error);
+    }
 
     public TResponse Match<TResponse>(Func<TValue, TResponse> onSuccess, Func<TError, TResponse> onFailure)
     {
         return IsSuccess ? onSuccess(_value) : onFailure(_error);
+    }
+
+    public async ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure)
+    {
+        return IsSuccess ? await onSuccess() : await onFailure(_error);
+    }
+
+    public async ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<TValue, Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure)
+    {
+        return IsSuccess ? await onSuccess(_value) : await onFailure(_error);
     }
 
     public TValue Unwrap()
@@ -129,11 +126,6 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
             : throw exception;
     }
 
-    IError IResult.UnwrapError()
-    {
-        return UnwrapError();
-    }
-
     public TError UnwrapError()
     {
         if (IsSuccess)
@@ -150,8 +142,7 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
     }
 
     public static implicit operator Result<TValue, TError>(TError error) => new() { _error = error };
-    public static implicit operator Result<TValue, TError>(TValue value) => new() { _value = value };
-
+    public static implicit operator Result<TValue, TError>(TValue value) => new() { _value = value, IsSuccess = true };
 }
 
 public struct Result<T> : IResult<T, Error>
@@ -161,9 +152,24 @@ public struct Result<T> : IResult<T, Error>
     public bool IsSuccess => _result.IsSuccess;
     public bool IsFailure => _result.IsFailure;
 
+    public TResponse Match<TResponse>(Func<TResponse> onSuccess, Func<Error, TResponse> onFailure)
+    {
+        return _result.Match(onSuccess, onFailure);
+    }
     public TResponse Match<TResponse>(Func<T, TResponse> onSuccess, Func<Error, TResponse> onFailure)
     {
         return _result.Match(onSuccess, onFailure);
+    }
+
+    public async ValueTask<TResponse> MatchAsync<TResponse>(Func<Task<TResponse>> onSuccess, Func<Error, Task<TResponse>> onFailure)
+    {
+        return await _result.Match(onSuccess, onFailure);
+    }
+
+    public async ValueTask<TResponse> MatchAsync<TResponse>(
+        Func<T, Task<TResponse>> onSuccess, Func<Error, Task<TResponse>> onFailure)
+    {
+        return await _result.Match(onSuccess, onFailure);
     }
 
     public T Unwrap()
@@ -186,11 +192,6 @@ public struct Result<T> : IResult<T, Error>
         return _result.Expect(exception);
     }
 
-    IError IResult.UnwrapError()
-    {
-        return UnwrapError();
-    }
-
     public Error UnwrapError()
     {
         return _result.UnwrapError();
@@ -201,6 +202,7 @@ public struct Result<T> : IResult<T, Error>
         return _result.Case();
     }
 
+    public static implicit operator Result<T>(Result<T, Error> result) => new() { _result = result };
     public static implicit operator Result<T>(Result<T, IError> result)
     {
         return result.Match(
@@ -208,7 +210,12 @@ public struct Result<T> : IResult<T, Error>
             error => new Result<T> { _result = new Error(error.Messages) });
     }
 
-    public static implicit operator Result<T>(Result<T, Error> result) => new() { _result = result };
+    public static implicit operator Result<T, Error>(Result<T> result)
+    {
+        return result.Match<Result<T, Error>>(
+            value => value,
+            error => error);
+    }
     public static implicit operator Result<T>(Error error) => new() { _result = error };
     public static implicit operator Result<T>(T value) => new() { _result = value };
 }
@@ -228,14 +235,18 @@ public interface IError
 
 public struct Error : IError
 {
+    public Error()
+    {
+    }
+
     public Error(ErrorReason reason)
     {
         Reason = reason;
     }
 
-    public Error(string code, string message)
+    public Error(string message, [CallerArgumentExpression("message")] string code = "")
     {
-        _messages.Add(new Message(code, message));
+        AddMessage(message, code);
     }
 
     public Error(IEnumerable<Message> messages)
@@ -256,9 +267,12 @@ public struct Error : IError
         return this;
     }
 
-    public Error AddMessage(string code, string message)
+    public Error AddMessage(string message, [CallerArgumentExpression("message")] string code = "")
     {
-        _messages.Add(new Message(code, message));
+        if (string.IsNullOrEmpty(code))
+            throw new ArgumentException("Code not specified for error");
+
+        _messages.Add(new Message(message, code));
         return this;
     }
 
@@ -267,10 +281,22 @@ public struct Error : IError
         _messages.AddRange(messages);
         return this;
     }
+
+    public Error CombineError(IError error)
+    {
+        _messages.AddRange(error.Messages);
+        return this;
+    }
+
+    public Error CombineError<TError>(IResult<TError> result) where TError : IError
+    {
+        _messages.AddRange(result.UnwrapError().Messages);
+        return this;
+    }
 }
 
-public readonly struct Message(string code, string description)
+public readonly struct Message(string description, string code)
 {
-    public string Code => code;
     public string Description => description;
+    public string Code => code;
 }

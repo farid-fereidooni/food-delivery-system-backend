@@ -29,7 +29,8 @@ public class SeedService : IHostedService
     {
         using var scope = _services.CreateScope();
 
-        var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+        var applicationManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+        var scopeManager = scope.ServiceProvider.GetRequiredService<IOpenIddictScopeManager>();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var clientConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<ClientConfiguration>>();
 
@@ -37,7 +38,8 @@ public class SeedService : IHostedService
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         await MigrateDatabase(dbContext, _logger, cancellationToken);
-        await BuildClients(manager, clientConfiguration, cancellationToken);
+        await BuildClients(applicationManager, clientConfiguration, cancellationToken);
+        await BuildApiClients(applicationManager, scopeManager, clientConfiguration, cancellationToken);
 
         await SeedUsers(userManager, rootUserConfiguration);
     }
@@ -116,14 +118,14 @@ public class SeedService : IHostedService
             };
             await clientManager.CreateAsync(client, cancellationToken);
 
-            if (await scopeManager.FindByNameAsync("api1", cancellationToken) is null)
+            if (await scopeManager.FindByNameAsync(clientConfig.ScopeName!, cancellationToken) is null)
             {
                 var scope = new OpenIddictScopeDescriptor
                 {
-                    Name = clientConfig.ScopeName,
+                    Name = clientConfig.ScopeName!,
                     Resources =
                     {
-                        "resource_server_1"
+                        clientConfig.ScopeName!
                     }
                 };
 

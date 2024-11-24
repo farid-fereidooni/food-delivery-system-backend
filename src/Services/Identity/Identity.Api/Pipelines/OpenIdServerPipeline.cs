@@ -22,6 +22,7 @@ public static class OpenIdServerPipeline
                     .SetAuthorizationEndpointUris("connect/authorize")
                     .SetTokenEndpointUris("connect/token")
                     .SetUserinfoEndpointUris("connect/userinfo")
+                    .SetIntrospectionEndpointUris("connect/introspect")
                     .RegisterScopes(Scopes.Email, Scopes.Profile)
                     .AllowClientCredentialsFlow()
                     .AllowAuthorizationCodeFlow()

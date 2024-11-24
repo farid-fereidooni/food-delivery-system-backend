@@ -4,6 +4,7 @@ using Identity.Core.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
@@ -19,6 +20,7 @@ public class OpenIdDictAuthorizationService
     private readonly IOpenIddictAuthorizationManager _authorizationManager;
     private readonly IOpenIddictScopeManager _scopeManager;
     private readonly HttpContext _httpContext;
+    private readonly ClientConfiguration _clientConfiguration;
 
     public OpenIdDictAuthorizationService(
         UserManager<ApplicationUser> userManager,
@@ -26,7 +28,9 @@ public class OpenIdDictAuthorizationService
         IOpenIddictApplicationManager applicationManager,
         IOpenIddictAuthorizationManager authorizationManager,
         IOpenIddictScopeManager scopeManager,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IOptions<ClientConfiguration> clientConfiguration
+        )
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -34,6 +38,7 @@ public class OpenIdDictAuthorizationService
         _authorizationManager = authorizationManager;
         _scopeManager = scopeManager;
         _httpContext = httpContextAccessor.HttpContext!;
+        _clientConfiguration = clientConfiguration.Value;
     }
 
     public async Task<Result<ClaimsIdentity, OpenIdAuthorizeError>> Authorize()
@@ -70,6 +75,9 @@ public class OpenIdDictAuthorizationService
 
         if (string.IsNullOrEmpty(request.ClientId))
             return new OpenIdAuthorizeError.InvalidClient("Client ID is required.");
+
+        if (!_clientConfiguration.Clients.TryGetValue(request.ClientId, out var clientConfig))
+            return new OpenIdAuthorizeError.DoLogin("Invalid client ID.");
 
         var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
         if (application is null)
@@ -109,7 +117,7 @@ public class OpenIdDictAuthorizationService
                     .SetClaim(OpenIddictConstants.Claims.PreferredUsername, await _userManager.GetUserNameAsync(user))
                     .SetClaims(OpenIddictConstants.Claims.Role, [.. (await _userManager.GetRolesAsync(user))]);
 
-                identity.SetScopes(request.GetScopes());
+                identity.SetScopes(request.GetScopes().Concat(clientConfig.AdditionalScopes));
                 identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
 
                 var authorization = authorizations.LastOrDefault();
