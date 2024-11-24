@@ -17,10 +17,12 @@ COPY ["Services/RestaurantManagement/RestaurantManagement.Test/RestaurantManagem
 COPY ["docker-compose.dcproj", "."]
 COPY ["FoodDeliverySystem.sln", "."]
 
-RUN dotnet restore "FoodDeliverySystem.sln" --verbosity n
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore "FoodDeliverySystem.sln" --verbosity n
 
 COPY ["Services/RestaurantManagement", "Services/RestaurantManagement"]
 WORKDIR "/src/Services/RestaurantManagement/RestaurantManagement.Api"
-RUN dotnet build -c $BUILD_CONFIGURATION
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet build -c $BUILD_CONFIGURATION
 
 ENTRYPOINT ["dotnet", "run", "--no-build", "--no-launch-profile", "--"]

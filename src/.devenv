@@ -1,0 +1,3 @@
+ASPNETCORE_ENVIRONMENT=Development
+IDENTITY_DB=Server=system-sql;port=5432;Database=identity;User Id=postgres;Password=postgres;
+RESTAURANT_MANAGEMENT_COMMAND_DB=Server=system-sql;port=5432;Database=restaurant_management;User Id=postgres;Password=postgres;

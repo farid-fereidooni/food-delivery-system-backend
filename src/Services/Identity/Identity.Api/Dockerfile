@@ -14,13 +14,16 @@ COPY ["Services/RestaurantManagement/RestaurantManagement.Test/RestaurantManagem
 COPY ["docker-compose.dcproj", "."]
 COPY ["FoodDeliverySystem.sln", "."]
 
-RUN dotnet restore "FoodDeliverySystem.sln" --verbosity n
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore "FoodDeliverySystem.sln" --verbosity n
+
 COPY ["Services/Identity", "Services/Identity"]
 
 FROM build AS publish
 WORKDIR "/src/Services/Identity/Identity.Api"
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish  "Identity.Api.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish "Identity.Api.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

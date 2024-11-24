@@ -5,3 +5,11 @@ services:
             dockerfile: Services/Identity/Identity.Api/Dockerfile.debug
         environment:
             - ConnectionStrings__RelationalDatabase=Server=system-sql;port=5432;Database=identity;User Id=postgres;Password=postgres;
+            - ASPNETCORE_ENVIRONMENT=Development
+    restaurant-management-api:
+        build:
+            context: .
+            dockerfile: Services/RestaurantManagement/RestaurantManagement.Api/Dockerfile.debug
+        environment:
+            - ConnectionStrings__CommandDatabase=Server=system-sql;port=5432;Database=restaurant_management;User Id=postgres;Password=postgres;
+            - ASPNETCORE_ENVIRONMENT=Development

@@ -20,6 +20,9 @@ services:
             dockerfile: Services/Identity/Identity.Api/Dockerfile
         ports:
             - "5000:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            - ConnectionStrings__RelationalDatabase=${IDENTITY_DB}
 
     restaurant-management-api:
         image: restaurant-management-api
@@ -28,6 +31,10 @@ services:
             dockerfile: Services/RestaurantManagement/RestaurantManagement.Api/Dockerfile
         ports:
             - "5010:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            - ConnectionStrings__CommandDatabase=${RESTAURANT_MANAGEMENT_COMMAND_DB}
+
 volumes:
     system-sql-data:
         external: false
