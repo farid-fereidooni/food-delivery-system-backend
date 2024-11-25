@@ -1,6 +1,6 @@
-namespace RestaurantManagement.Api.Models;
-
 using RestaurantManagement.Core.Domain.Dtos;
+
+namespace RestaurantManagement.Api.Dtos;
 
 public class GenericHttpResponse
 {

@@ -14,8 +14,6 @@ public static class OpenIdIntrospectionPipeline
                 options.SetIssuer(identityConfiguration[nameof(IdentityConfiguration.Issuer)]!);
                 options.AddAudiences(identityConfiguration[nameof(IdentityConfiguration.Audience)]!);
 
-                // Configure the validation handler to use introspection and register the client
-                // credentials used when communicating with the remote introspection endpoint.
                 options.UseIntrospection()
                     .SetClientId(identityConfiguration[nameof(IdentityConfiguration.ClientId)]!)
                     .SetClientSecret(identityConfiguration[nameof(IdentityConfiguration.ClientSecret)]!);

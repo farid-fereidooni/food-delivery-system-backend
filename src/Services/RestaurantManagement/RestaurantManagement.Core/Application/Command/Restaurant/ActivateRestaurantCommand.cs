@@ -26,7 +26,7 @@ public class ActivateRestaurantCommandHandler : IRequestHandler<ActivateRestaura
     public async Task<Result> Handle(
         ActivateRestaurantCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

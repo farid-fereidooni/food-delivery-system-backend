@@ -1,5 +1,6 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
@@ -26,7 +27,7 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
     public async Task<Result<EntityCreatedDto>> Handle(
         AddMenuItemCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
         var ownerId = currentUserResult.Unwrap();

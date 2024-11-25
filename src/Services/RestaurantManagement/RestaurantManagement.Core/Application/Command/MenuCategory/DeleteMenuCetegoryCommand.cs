@@ -26,7 +26,7 @@ public class DeleteMenuCategoryCommandHandler : IRequestHandler<DeleteMenuCatego
     public async Task<Result> Handle(
         DeleteMenuCategoryCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

@@ -1,5 +1,6 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
@@ -29,7 +30,7 @@ public class DeleteFoodCommandHandler : IRequestHandler<DeleteFoodCommand, Resul
 
     public async Task<Result> Handle(DeleteFoodCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

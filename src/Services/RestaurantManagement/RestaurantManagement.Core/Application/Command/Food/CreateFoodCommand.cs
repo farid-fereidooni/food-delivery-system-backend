@@ -32,7 +32,7 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Resul
     public async Task<Result<EntityCreatedDto>> Handle(
         CreateFoodCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

@@ -32,7 +32,7 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
     public async Task<Result<EntityCreatedDto>> Handle(
         CreateRestaurantCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

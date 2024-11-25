@@ -4,6 +4,6 @@ namespace RestaurantManagement.Core.Domain.Contracts;
 
 public interface IAuthService
 {
-    Task<bool> IsAuthenticated();
-    Task<Result<Guid>> CurrentUserId();
+    bool IsAuthenticated();
+    Result<Guid> CurrentUserId();
 }

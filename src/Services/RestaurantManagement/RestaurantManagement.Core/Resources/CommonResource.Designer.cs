@@ -146,5 +146,17 @@ namespace RestaurantManagement.Core.Resources {
                 return ResourceManager.GetString("App_CategoryNotFound", resourceCulture);
             }
         }
+        
+        public static string Validation_FieldIsRequired {
+            get {
+                return ResourceManager.GetString("Validation_FieldIsRequired", resourceCulture);
+            }
+        }
+        
+        public static string Authorization_NotAuthenticated {
+            get {
+                return ResourceManager.GetString("Authorization_NotAuthenticated", resourceCulture);
+            }
+        }
     }
 }

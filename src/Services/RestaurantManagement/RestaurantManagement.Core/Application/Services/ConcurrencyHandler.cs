@@ -1,14 +1,15 @@
 using Microsoft.Extensions.Logging;
 using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Exceptions;
+using RestaurantManagement.Core.Helpers;
 
-namespace RestaurantManagement.Core.Helpers;
+namespace RestaurantManagement.Core.Application.Services;
 
 public class ConcurrencyHandler : IConcurrencyHandler
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<ConcurrencyHandler> _logger;
 
-    public ConcurrencyHandler(ILogger logger)
+    public ConcurrencyHandler(ILogger<ConcurrencyHandler> logger)
     {
         _logger = logger;
     }

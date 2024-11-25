@@ -73,11 +73,11 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
     where TError : IError
 {
     private TError _error;
-    private TValue _value;
+    private TValue? _value;
 
     [MemberNotNullWhen(false, nameof(_error))]
     [MemberNotNullWhen(true, nameof(_value))]
-    public bool IsSuccess { get; }
+    public bool IsSuccess { get; private init; }
     public bool IsFailure => !IsSuccess;
 
     public TResponse Match<TResponse>(Func<TResponse> onSuccess, Func<TError, TResponse> onFailure)
@@ -142,8 +142,7 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
     }
 
     public static implicit operator Result<TValue, TError>(TError error) => new() { _error = error };
-    public static implicit operator Result<TValue, TError>(TValue value) => new() { _value = value };
-
+    public static implicit operator Result<TValue, TError>(TValue value) => new() { _value = value, IsSuccess = true };
 }
 
 public struct Result<T> : IResult<T, Error>
@@ -203,6 +202,7 @@ public struct Result<T> : IResult<T, Error>
         return _result.Case();
     }
 
+    public static implicit operator Result<T>(Result<T, Error> result) => new() { _result = result };
     public static implicit operator Result<T>(Result<T, IError> result)
     {
         return result.Match(
@@ -210,7 +210,6 @@ public struct Result<T> : IResult<T, Error>
             error => new Result<T> { _result = new Error(error.Messages) });
     }
 
-    public static implicit operator Result<T>(Result<T, Error> result) => new() { _result = result };
     public static implicit operator Result<T, Error>(Result<T> result)
     {
         return result.Match<Result<T, Error>>(

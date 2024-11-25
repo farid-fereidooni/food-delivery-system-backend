@@ -1,5 +1,6 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
@@ -28,7 +29,7 @@ public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuIt
 
     public async Task<Result> Handle(DecreaseMenuItemStockCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
         var ownerId = currentUserResult.Unwrap();

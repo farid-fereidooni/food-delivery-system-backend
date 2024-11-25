@@ -1,5 +1,6 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.DomainEvents;
 using RestaurantManagement.Core.Domain.Models.MenuAggregate;
 
@@ -21,7 +22,7 @@ public class RestaurantCreatedDomainEventHandler : INotificationHandler<Restaura
     {
         var defaultMenu = new Menu(notification.RestaurantId);
 
-        await _menuRepository.AddAsync(defaultMenu);
+        await _menuRepository.AddAsync(defaultMenu, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
     }
 }

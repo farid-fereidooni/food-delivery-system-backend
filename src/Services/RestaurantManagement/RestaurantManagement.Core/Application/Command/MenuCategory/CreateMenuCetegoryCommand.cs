@@ -26,7 +26,7 @@ public class CreateMenuCategoryCommandHandler : IRequestHandler<CreateMenuCatego
     public async Task<Result<EntityCreatedDto>> Handle(
         CreateMenuCategoryCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

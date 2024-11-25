@@ -33,7 +33,7 @@ public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCo
     public async Task<Result> Handle(
         UpdateRestaurantCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

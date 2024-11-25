@@ -25,7 +25,7 @@ public class CreateRestaurantOwnerCommandHandler
     public async Task<Result<EntityCreatedDto>> Handle(
         CreateRestaurantOwnerCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = await _authService.CurrentUserId();
+        var currentUserResult = _authService.CurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

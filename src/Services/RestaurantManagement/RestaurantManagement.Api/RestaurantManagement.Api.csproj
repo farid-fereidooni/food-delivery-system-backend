@@ -20,7 +20,9 @@
         </PackageReference>
         <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="5.8.0" />
         <PackageReference Include="OpenIddict.Validation.SystemNetHttp" Version="5.8.0" />
+        <PackageReference Include="Scrutor" Version="5.0.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="Polly" Version="8.3.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,9 +36,5 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RestaurantManagement.Infrastructure\RestaurantManagement.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Controllers\" />
     </ItemGroup>
 </Project>
