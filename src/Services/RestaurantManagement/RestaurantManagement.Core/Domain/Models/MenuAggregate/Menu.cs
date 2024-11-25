@@ -21,13 +21,7 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
     public Guid RestaurantId { get; private set; }
 
-    private IDictionary<Guid, MenuItem> _menuItemDictionary = new Dictionary<Guid, MenuItem>();
-
-    private ICollection<MenuItem> MenuItems
-    {
-        get => _menuItemDictionary.Values;
-        set { _menuItemDictionary = value.ToDictionary(x => x.Id, x => x); }
-    }
+    private EntityCollection<MenuItem> MenuItems { get; } = new();
 
     public bool IsActive { get; private set; }
     public uint Version { get; set; }
@@ -60,7 +54,7 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
     public void RemoveMenuItem(Guid menuItemId)
     {
-        _menuItemDictionary.Remove(menuItemId);
+        MenuItems.RemoveById(menuItemId);
     }
 
     public void AddStock(Guid menuItemId, uint number)
@@ -83,7 +77,7 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
     private MenuItem GetMenuItem(Guid menuItemId)
     {
-        return _menuItemDictionary.TryGetValue(menuItemId, out var menuItem)
+        return MenuItems.TryGetById(menuItemId, out var menuItem)
             ? menuItem
             : throw InvalidDomainOperationException.Create("Menu item does not exist.");
     }

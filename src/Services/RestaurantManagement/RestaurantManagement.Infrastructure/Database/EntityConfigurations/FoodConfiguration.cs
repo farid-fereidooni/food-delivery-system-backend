@@ -10,7 +10,6 @@ public class FoodConfiguration : IEntityTypeConfiguration<Food>
     public void Configure(EntityTypeBuilder<Food> builder)
     {
         builder.ComplexProperty(c => c.Specification);
-        builder.HasIndex(p => p.Specification.Name).IsUnique();
 
         builder.HasMany<FoodType>()
             .WithMany()

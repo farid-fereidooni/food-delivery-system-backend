@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Models.MenuAggregate;
 using RestaurantManagement.Infrastructure.Database;
 

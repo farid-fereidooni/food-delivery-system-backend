@@ -16,7 +16,7 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Restaurant>
     public void Configure(EntityTypeBuilder<Restaurant> builder)
     {
         builder.HasOne<RestaurantOwner>()
-            .WithMany()
+            .WithMany("Restaurants")
             .HasForeignKey(x => x.OwnerId);
 
         builder.ComplexProperty(p => p.Address);

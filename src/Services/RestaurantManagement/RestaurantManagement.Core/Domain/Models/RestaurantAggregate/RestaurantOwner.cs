@@ -18,20 +18,16 @@ public class RestaurantOwner : AggregateRoot
         Id = ownerId;
     }
 
-    private IDictionary<Guid, Restaurant> _restaurantDictionary = new Dictionary<Guid, Restaurant>();
-    private ICollection<Restaurant> Restaurants {
-        get => _restaurantDictionary.Values;
-        set { _restaurantDictionary = value.ToDictionary(x => x.Id, x => x); }
-    }
+    private EntityCollection<Restaurant> Restaurants { get; } = new();
 
     public Result CanAddRestaurant(string name, Address address)
     {
         var error = new Error();
 
-        if (_restaurantDictionary.Count >= MaxRestaurantCount)
+        if (Restaurants.Count >= MaxRestaurantCount)
             error.AddMessage(CommonResource.Validation_MaximumNumberOfRestaurant, nameof(CommonResource.Validation_MaximumNumberOfRestaurant));
 
-        if (_restaurantDictionary.Values.Any(x => x.Name == name))
+        if (Restaurants.Any(x => x.Name == name))
             error.AddMessage(CommonResource.Validation_RestaurantNameShouldBeUnique, nameof(CommonResource.Validation_RestaurantNameShouldBeUnique));
 
         return error.IsEmpty ? Result.Success() : error;
@@ -43,7 +39,7 @@ public class RestaurantOwner : AggregateRoot
         InvalidDomainStateException.ThrowIfError(validation);
 
         var restaurant = new Restaurant(name, address, Id);
-        _restaurantDictionary.Add(restaurant.Id, restaurant);
+        Restaurants.Add(restaurant);
 
         return restaurant.Id;
     }
@@ -68,7 +64,7 @@ public class RestaurantOwner : AggregateRoot
 
     private Restaurant GetRestaurant(Guid restaurantId)
     {
-        return _restaurantDictionary.TryGetValue(restaurantId, out var restaurant)
+        return Restaurants.TryGetById(restaurantId, out var restaurant)
             ? restaurant
             : throw InvalidDomainOperationException.Create("Restaurant does not exist.");
     }

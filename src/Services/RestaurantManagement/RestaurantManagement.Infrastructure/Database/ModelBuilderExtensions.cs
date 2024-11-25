@@ -11,11 +11,23 @@ public static class ModelBuilderExtensions
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
             entityType
+                .ApplyPrimaryKeyConfigurations(builder)
                 .ApplyConcurrencyConfigurations(builder)
                 .ApplyEntityConfigurations(builder);
         }
 
         return builder;
+    }
+
+    private static IMutableEntityType ApplyPrimaryKeyConfigurations(
+        this IMutableEntityType entityType, ModelBuilder modelBuilder)
+    {
+        if (typeof(Entity).IsAssignableFrom(entityType.ClrType))
+        {
+            modelBuilder.Entity(entityType.ClrType).Property(nameof(Entity.Id)).ValueGeneratedNever();
+        }
+
+        return entityType;
     }
 
     private static IMutableEntityType ApplyEntityConfigurations(

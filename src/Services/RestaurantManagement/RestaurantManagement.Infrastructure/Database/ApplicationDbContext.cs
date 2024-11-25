@@ -14,11 +14,11 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
 {
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<RestaurantOwner> RestaurantOwners { get; set; }
-    public DbSet<Menu> Menus { get; }
-    public DbSet<MenuItem> MenuItems { get; }
-    public DbSet<MenuCategory> MenuCategories { get; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<MenuItem> MenuItems { get; set; }
+    public DbSet<MenuCategory> MenuCategories { get; set; }
     public DbSet<Food> Foods { get; set; }
-    public DbSet<FoodType> FoodTypes { get; }
+    public DbSet<FoodType> FoodTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,8 +30,13 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
+        ChangeTracker.DetectChanges();
+        ChangeTracker.AutoDetectChangesEnabled = false;
+
         UpdateTimeStamps();
         await DispatchDomainEventsAsync();
+
+        ChangeTracker.AutoDetectChangesEnabled = true;
 
         try
         {
@@ -46,7 +51,6 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
     private void UpdateTimeStamps()
     {
         var now = DateTime.UtcNow;
-        ChangeTracker.AutoDetectChangesEnabled = false;
         foreach (var entity in ChangeTracker.Entries<Entity>())
         {
             if (entity.State == EntityState.Added)
@@ -55,21 +59,28 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
             if (entity.State == EntityState.Modified)
                 entity.Entity.UpdatedAt = now;
         }
-        ChangeTracker.AutoDetectChangesEnabled = true;
     }
 
     private async Task DispatchDomainEventsAsync()
     {
         var domainEntities = ChangeTracker
             .Entries<Entity>()
-            .Where(x => x.Entity.DomainEvents.Count != 0);
+            .Where(x => x.Entity.DomainEvents.Count != 0)
+            .ToList();
 
-        foreach (var domainEntity in domainEntities)
-        {
-            foreach (var domainEvent in domainEntity.Entity.DomainEvents)
-                await _mediator.Publish(domainEvent);
+        var domainEvents = domainEntities
+            .SelectMany(x => x.Entity.DomainEvents)
+            .ToList();
 
-            domainEntity.Entity.ClearDomainEvents();
-        }
+        domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+
+        foreach (var domainEvent in domainEvents)
+            await _mediator.Publish(domainEvent);
+    }
+
+    public async Task MigrateAsync(CancellationToken cancellationToken)
+    {
+        if ((await Database.GetPendingMigrationsAsync(cancellationToken)).Any())
+            await Database.MigrateAsync(cancellationToken);
     }
 }
