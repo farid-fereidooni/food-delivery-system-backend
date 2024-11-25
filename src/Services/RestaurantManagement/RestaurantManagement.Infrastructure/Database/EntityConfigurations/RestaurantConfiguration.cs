@@ -20,5 +20,6 @@ public class RestaurantConfiguration : IEntityTypeConfiguration<Restaurant>
             .HasForeignKey(x => x.OwnerId);
 
         builder.ComplexProperty(p => p.Address);
+        builder.Property(p => p.Status).HasConversion<string>();
     }
 }
