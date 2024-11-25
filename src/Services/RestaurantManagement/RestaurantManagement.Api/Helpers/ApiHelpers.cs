@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -39,7 +38,7 @@ public static partial class ApiHelpers
         };
     }
 
-    public static string FormatError(this string error, [CallerArgumentExpression("error")] string? code = null)
+    public static string FormatError(this string error, string code)
     {
         if (string.IsNullOrEmpty(code))
             throw new ArgumentException("Code not specified for error");
@@ -47,7 +46,7 @@ public static partial class ApiHelpers
         return $"[{code}] {error}";
     }
 
-    [GeneratedRegex(@"(\[.+\])\s?(.+)")]
+    [GeneratedRegex(@"\[(.+)\]\s?(.+)")]
     private static partial Regex ErrorFormatRegex();
 
     public static IActionResult ToErrorResult(this ModelStateDictionary modelStateDictionary)
@@ -56,8 +55,8 @@ public static partial class ApiHelpers
             s.Errors.Select(err =>
             {
                 var errorFormatMatch = ErrorFormatRegex().Match(err.ErrorMessage);
-                if (errorFormatMatch is { Success: true, Groups.Count: 2 })
-                    return new Message(errorFormatMatch.Groups[1].Value, errorFormatMatch.Groups[0].Value);
+                if (errorFormatMatch is { Success: true, Groups.Count: >= 2 })
+                    return new Message(errorFormatMatch.Groups[2].Value, errorFormatMatch.Groups[1].Value);
 
                 return new Message(err.ErrorMessage, "ValidationError");
             })

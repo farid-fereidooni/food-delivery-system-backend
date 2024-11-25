@@ -20,7 +20,7 @@ public class LocalizedValidationAttributeAdapterProvider : IValidationAttributeA
         if (translation == null)
             return _originalProvider.GetAttributeAdapter(attribute, stringLocalizer);
 
-        attribute.ErrorMessage = translation.FormatError();
+        attribute.ErrorMessage = translation.FormatError(errorMessage);
         return _originalProvider.GetAttributeAdapter(attribute, stringLocalizer);
     }
 }
