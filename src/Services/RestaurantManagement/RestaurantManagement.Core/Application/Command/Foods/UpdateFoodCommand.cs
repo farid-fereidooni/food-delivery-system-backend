@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Domain.ValueObjects;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.Food;
+namespace RestaurantManagement.Core.Application.Command.Foods;
 
 public record UpdateFoodCommand(
     Guid Id,
@@ -50,7 +50,7 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, Resul
             error.AddMessage(CommonResource.App_CategoryAlreadyExists);
 
         var newFoodSpecificationResult = FoodSpecification.Validate(request.Name, request.Price, request.Description)
-            .And(new FoodSpecification(request.Name, request.Price, request.Description));
+            .AndThen(() => new FoodSpecification(request.Name, request.Price, request.Description));
 
         if (newFoodSpecificationResult.IsFailure)
             error.CombineError(newFoodSpecificationResult);

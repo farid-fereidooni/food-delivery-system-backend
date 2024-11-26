@@ -20,7 +20,7 @@ public class Food : AggregateRoot
     }
 
     private ICollection<FoodTypeFood> FoodTypeFoods { get; set; }
-    public Guid OwnerId { get; }
+    public Guid OwnerId { get; private set; }
 
     public FoodSpecification Specification { get; private set; }
 

@@ -26,7 +26,7 @@ public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRe
     {
         return await _dbContext.Menus
             .Where(m => m.Id == menuId
-                && _dbContext.Restaurants.Any(r => r.Id == m.Id && r.OwnerId == ownerId))
+                && _dbContext.Restaurants.Any(r => r.Id == m.RestaurantId && r.OwnerId == ownerId))
             .Include("MenuItems")
             .SingleOrDefaultAsync(cancellationToken);
     }

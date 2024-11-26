@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.MenuItem;
+namespace RestaurantManagement.Core.Application.Command.Menus;
 
 public record AddMenuItemCommand(Guid MenuId, Guid CategoryId, Guid FoodId) : IRequest<Result<EntityCreatedDto>>;
 
@@ -37,7 +37,7 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
             return new Error(CommonResource.App_MenuNotFound);
 
         var itemResult = menu.CanAddMenuItem(request.CategoryId, request.FoodId)
-            .And(menu.AddMenuItem(request.CategoryId, request.FoodId));
+            .AndThen(() => menu.AddMenuItem(request.CategoryId, request.FoodId));
 
         if (itemResult.IsFailure)
             return itemResult.UnwrapError();

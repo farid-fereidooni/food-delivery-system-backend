@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.Food;
+namespace RestaurantManagement.Core.Application.Command.Foods;
 
 public record DeleteFoodCommand(Guid Id)
     : IRequest<Result>;

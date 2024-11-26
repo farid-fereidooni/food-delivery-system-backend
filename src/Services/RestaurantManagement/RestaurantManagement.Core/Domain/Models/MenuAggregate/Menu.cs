@@ -2,6 +2,7 @@ using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Domain.Exceptions;
 using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Core.Domain.Models.MenuAggregate;
 
@@ -43,13 +44,24 @@ public class Menu : AggregateRoot, IConcurrentSafe
         InvalidDomainStateException.ThrowIfError(validation);
 
         var menuItem = new MenuItem(categoryId, foodId);
+        MenuItems.Add(menuItem);
         return menuItem.Id;
+    }
+
+    public Result CanChangeMenuItemCategory(Guid menuItemId, Guid newCategoryId)
+    {
+        if (!MenuItems.ContainsBydId(menuItemId))
+            return new Error(CommonResource.App_MenuItemNotFound).WithReason(ErrorReason.NotFound);
+
+        return Result.Success();
     }
 
     public void ChangeMenuItemCategory(Guid menuItemId, Guid newCategoryId)
     {
-       var menuItem = GetMenuItem(menuItemId);
-       menuItem.ChangeCategory(newCategoryId);
+        InvalidDomainOperationException.ThrowIfError(CanChangeMenuItemCategory(menuItemId, newCategoryId));
+
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.ChangeCategory(newCategoryId);
     }
 
     public void RemoveMenuItem(Guid menuItemId)
@@ -57,10 +69,20 @@ public class Menu : AggregateRoot, IConcurrentSafe
         MenuItems.RemoveById(menuItemId);
     }
 
-    public void AddStock(Guid menuItemId, uint number)
+    public Result CanAddStock(Guid menuItemId, uint number)
     {
+        if (!MenuItems.ContainsBydId(menuItemId))
+            return new Error(CommonResource.App_MenuItemNotFound).WithReason(ErrorReason.NotFound);
+
+        return Result.Success();
+    }
+
+    public void AddStock(Guid menuItemId, uint amount)
+    {
+        InvalidDomainOperationException.ThrowIfError(CanAddStock(menuItemId, amount));
+
         var menuItem = GetMenuItem(menuItemId);
-        menuItem.AddStock(number);
+        menuItem.AddStock(amount);
     }
 
     public Result CanDecreaseStock(Guid menuItemId, uint number)

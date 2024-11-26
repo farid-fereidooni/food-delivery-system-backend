@@ -1,10 +1,11 @@
 using MediatR;
 using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
+using RestaurantManagement.Core.Domain.Models.FoodAggregate;
 using RestaurantManagement.Core.Domain.ValueObjects;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.Food;
+namespace RestaurantManagement.Core.Application.Command.Foods;
 
 public record CreateFoodCommand(
     string Name,
@@ -41,18 +42,17 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Resul
         if (await _foodRepository.ExistsWithName(ownerId, request.Name, cancellationToken: cancellationToken))
             return new Error(CommonResource.App_CategoryAlreadyExists);
 
-        var foodResult = FoodSpecification.Validate(request.Name, request.Price, request.Description)
-            .And(new Domain.Models.FoodAggregate.Food(
-                new FoodSpecification(request.Name, request.Price, request.Description),
-                ownerId,
-                request.FoodTypeIds));
+        return await FoodSpecification.Validate(request.Name, request.Price, request.Description)
+            .AndThenAsync(async () =>
+            {
+                var food = new Food(
+                    new FoodSpecification(request.Name, request.Price, request.Description),
+                    ownerId,
+                    request.FoodTypeIds);
 
-        if (foodResult.IsFailure)
-            return foodResult.UnwrapError();
-
-        await _foodRepository.AddAsync(foodResult.Unwrap(), cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return EntityCreatedDto.From(foodResult.Unwrap().Id);
+                await _foodRepository.AddAsync(food, cancellationToken);
+                await _unitOfWork.CommitAsync(cancellationToken);
+                return EntityCreatedDto.From(food.Id);
+            });
     }
 }

@@ -33,6 +33,11 @@ public class EntityCollection<TEntity> : ICollection<TEntity>
         return _dictionary.ContainsKey(item.Id);
     }
 
+    public bool ContainsBydId(Guid id)
+    {
+        return _dictionary.ContainsKey(id);
+    }
+
     public TEntity GetById(Guid id) => _dictionary[id];
 
     public bool TryGetById(Guid id, [NotNullWhen(true)] out TEntity? item)

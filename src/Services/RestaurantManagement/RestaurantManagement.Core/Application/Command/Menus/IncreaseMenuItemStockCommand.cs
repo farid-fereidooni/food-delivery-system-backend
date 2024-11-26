@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.MenuItem;
+namespace RestaurantManagement.Core.Application.Command.Menus;
 
 public record IncreaseMenuItemStockCommand(Guid MenuId, Guid MenuItemId, uint Amount) : IRequest<Result>;
 
@@ -46,8 +46,12 @@ public class IncreaseMenuItemStockCommandHandler: IRequestHandler<IncreaseMenuIt
         if (menu is null)
             return new Error(CommonResource.App_MenuNotFound);
 
-        menu.AddStock(request.MenuItemId, request.Amount);
-        await _unitOfWork.CommitAsync(cancellationToken);
-        return Result.Success();
+        return await menu
+            .CanAddStock(request.MenuItemId, request.Amount)
+            .AndThenAsync(async () =>
+            {
+                menu.AddStock(request.MenuItemId, request.Amount);
+                await _unitOfWork.CommitAsync(cancellationToken);
+            });
     }
 }

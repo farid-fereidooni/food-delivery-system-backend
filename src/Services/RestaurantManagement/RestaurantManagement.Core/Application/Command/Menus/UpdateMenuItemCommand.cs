@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.MenuItem;
+namespace RestaurantManagement.Core.Application.Command.Menus;
 
 public record UpdateMenuItemCommand(Guid MenuId, Guid MenuItemId, Guid CategoryId) : IRequest<Result>;
 
@@ -35,9 +35,12 @@ public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemComman
         if (menu is null)
             return new Error(CommonResource.App_MenuNotFound);
 
-        menu.ChangeMenuItemCategory(request.MenuItemId, request.CategoryId);
-        await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Result.Success();
+        return await menu
+            .CanChangeMenuItemCategory(request.MenuItemId, request.CategoryId)
+            .AndThenAsync(async () =>
+            {
+                menu.ChangeMenuItemCategory(request.MenuItemId, request.CategoryId);
+                await _unitOfWork.CommitAsync(cancellationToken);
+            });
     }
 }

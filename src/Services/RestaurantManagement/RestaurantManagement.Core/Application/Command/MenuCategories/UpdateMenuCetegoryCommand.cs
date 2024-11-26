@@ -3,7 +3,7 @@ using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.MenuCategory;
+namespace RestaurantManagement.Core.Application.Command.MenuCategories;
 
 public record UpdateMenuCategoryCommand(Guid Id, string Name) : IRequest<Result>;
 

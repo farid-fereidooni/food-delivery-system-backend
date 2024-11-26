@@ -70,9 +70,18 @@
         <value>Category not found.</value>
     </data>
     <data name="Validation_FieldIsRequired" xml:space="preserve">
-        <value>{0} is required.</value>
+        <value>"{0}" is required.</value>
     </data>
     <data name="Authorization_NotAuthenticated" xml:space="preserve">
         <value>You are not authenticated.</value>
+    </data>
+    <data name="Validation_InvalidFieldValue" xml:space="preserve">
+        <value>"{0}" is invalid.</value>
+    </data>
+    <data name="Validation_FieldShouldNotBeNegative" xml:space="preserve">
+        <value>"{0}" should not be negative value</value>
+    </data>
+    <data name="App_MenuItemNotFound" xml:space="preserve">
+        <value>Menu item not found</value>
     </data>
 </root>

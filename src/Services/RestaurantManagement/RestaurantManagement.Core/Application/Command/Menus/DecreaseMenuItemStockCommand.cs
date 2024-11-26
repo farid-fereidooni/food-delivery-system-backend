@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Contracts.Command;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.MenuItem;
+namespace RestaurantManagement.Core.Application.Command.Menus;
 
 public record DecreaseMenuItemStockCommand(Guid MenuId, Guid MenuItemId, uint Amount) : IRequest<Result>;
 

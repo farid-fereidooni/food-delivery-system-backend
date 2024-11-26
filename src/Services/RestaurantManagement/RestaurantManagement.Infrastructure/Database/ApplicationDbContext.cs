@@ -44,6 +44,7 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
         }
         catch (DbUpdateConcurrencyException)
         {
+            ChangeTracker.Clear();
             throw new UpdateConcurrencyException();
         }
     }

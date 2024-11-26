@@ -3,7 +3,7 @@ using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.RestaurantOwner;
+namespace RestaurantManagement.Core.Application.Command.RestaurantOwners;
 
 public record CreateRestaurantOwnerCommand : IRequest<Result<EntityCreatedDto>>;
 

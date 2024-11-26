@@ -158,5 +158,23 @@ namespace RestaurantManagement.Core.Resources {
                 return ResourceManager.GetString("Authorization_NotAuthenticated", resourceCulture);
             }
         }
+        
+        public static string Validation_InvalidFieldValue {
+            get {
+                return ResourceManager.GetString("Validation_InvalidFieldValue", resourceCulture);
+            }
+        }
+        
+        public static string Validation_FieldShouldNotBeNegative {
+            get {
+                return ResourceManager.GetString("Validation_FieldShouldNotBeNegative", resourceCulture);
+            }
+        }
+        
+        public static string App_MenuItemNotFound {
+            get {
+                return ResourceManager.GetString("App_MenuItemNotFound", resourceCulture);
+            }
+        }
     }
 }

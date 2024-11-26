@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using RestaurantManagement.Core.Application.Command.Restaurant;
+using RestaurantManagement.Core.Application.Command.Restaurants;
 using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Api.Dtos.Restaurant;

@@ -3,7 +3,7 @@ using RestaurantManagement.Core.Domain.Contracts;
 using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.Restaurant;
+namespace RestaurantManagement.Core.Application.Command.Restaurants;
 
 public record ActivateRestaurantCommand(Guid Id) : IRequest<Result>;
 

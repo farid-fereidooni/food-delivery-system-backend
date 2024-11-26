@@ -4,7 +4,7 @@ using RestaurantManagement.Core.Domain.Dtos;
 using RestaurantManagement.Core.Domain.ValueObjects;
 using RestaurantManagement.Core.Resources;
 
-namespace RestaurantManagement.Core.Application.Command.Restaurant;
+namespace RestaurantManagement.Core.Application.Command.Restaurants;
 
 public record UpdateRestaurantCommand(
     Guid Id,

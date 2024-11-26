@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Core.Application.Command.RestaurantOwner;
+using RestaurantManagement.Core.Application.Command.RestaurantOwners;
 
 namespace RestaurantManagement.Api.Controllers;
 

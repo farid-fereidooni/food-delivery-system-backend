@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Mvc.DataAnnotations;
-using RestaurantManagement.Api.Filters;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Pipelines;
 using RestaurantManagement.Api.Services;
 using RestaurantManagement.Core.Application.Command.Admin;
@@ -19,10 +18,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.AddCustomOpenIdServer();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(CreateFoodTypeAdminCommand).Assembly));
 
-builder.Services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
+builder.AddCustomControllers();
 
-builder.Services.AddControllers(options =>
-    options.Filters.Add<ModelStateFilter>());
+builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
 
 var app = builder.Build();
 

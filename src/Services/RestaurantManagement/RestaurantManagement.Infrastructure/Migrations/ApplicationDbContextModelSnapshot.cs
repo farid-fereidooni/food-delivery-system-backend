@@ -33,6 +33,10 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -55,6 +59,9 @@ namespace RestaurantManagement.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_foods");
+
+                    b.HasIndex("OwnerId")
+                        .HasDatabaseName("ix_foods_owner_id");
 
                     b.ToTable("foods", (string)null);
                 });
@@ -298,6 +305,16 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasName("pk_restaurant_owners");
 
                     b.ToTable("restaurant_owners", (string)null);
+                });
+
+            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.Food", b =>
+                {
+                    b.HasOne("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.RestaurantOwner", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_foods_restaurant_owners_owner_id");
                 });
 
             modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.FoodTypeFood", b =>

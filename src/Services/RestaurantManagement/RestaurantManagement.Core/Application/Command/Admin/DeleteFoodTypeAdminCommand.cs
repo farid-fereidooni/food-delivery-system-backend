@@ -5,7 +5,7 @@ using RestaurantManagement.Core.Resources;
 
 namespace RestaurantManagement.Core.Application.Command.Admin;
 
-public record DeleteFoodTypeAdminCommand(Guid Id, string Name) : IRequest<Result>;
+public record DeleteFoodTypeAdminCommand(Guid Id) : IRequest<Result>;
 
 public class DeleteFoodTypeAdminCommandHandler : IRequestHandler<DeleteFoodTypeAdminCommand, Result>
 {
