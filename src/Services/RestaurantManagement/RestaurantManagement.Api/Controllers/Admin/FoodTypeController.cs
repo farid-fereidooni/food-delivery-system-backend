@@ -9,7 +9,7 @@ namespace RestaurantManagement.Api.Controllers.Admin;
 
 [ApiController]
 [Route("api/admin/[controller]")]
-[Authorize]
+[Authorize(Roles = Constants.AdminRole)]
 public class FoodTypeController : Controller
 {
     private readonly IMediator _mediator;

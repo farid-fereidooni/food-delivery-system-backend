@@ -257,6 +257,7 @@ public class SeedService : IHostedService
             Permissions.ResponseTypes.Code,
             Permissions.Scopes.Email,
             Permissions.Scopes.Profile,
+            Permissions.Scopes.Roles
         ],
         _ => throw new ArgumentException($"Invalid client type: {clientType}")
     };
