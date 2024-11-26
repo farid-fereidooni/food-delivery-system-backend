@@ -246,6 +246,7 @@ public struct Error : IError
 
     public Error(string message, [CallerArgumentExpression("message")] string code = "")
     {
+        code = code.Split('.').Last();
         AddMessage(message, code);
     }
 
@@ -320,18 +321,6 @@ public static class ResultExtensions
         this IResult<Error> result, Result<TValue> finalResult)
     {
         return result.IsSuccess ? finalResult : result.UnwrapError();
-    }
-
-    public static Result<TValue, TError> And<TValue, TError>(this IResult<TValue, TError> result, TError error)
-        where TError : IError
-    {
-        return result.IsSuccess ? error : result.UnwrapError();
-    }
-
-    public static Result<TValue, TError> And<TValue, TError>(this IResult<TError> result, TValue value)
-        where TError : IError
-    {
-        return result.IsSuccess ? value : result.UnwrapError();
     }
 
     public static Result AndThen(this IResult<Error> result, Action finalAction)
