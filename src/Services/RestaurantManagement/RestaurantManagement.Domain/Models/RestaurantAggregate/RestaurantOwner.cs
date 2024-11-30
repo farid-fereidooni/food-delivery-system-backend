@@ -18,17 +18,17 @@ public class RestaurantOwner : AggregateRoot
         Id = ownerId;
     }
 
-    private EntityCollection<Restaurant> Restaurants { get; } = new();
+    protected internal EntityCollection<Restaurant> Restaurants { get; } = new();
 
     public Result CanAddRestaurant(string name, Address address)
     {
         var error = new Error();
 
         if (Restaurants.Count >= MaxRestaurantCount)
-            error.AddMessage(CommonResource.Validation_MaximumNumberOfRestaurant, nameof(CommonResource.Validation_MaximumNumberOfRestaurant));
+            error.AddMessage(CommonResource.Validation_MaximumNumberOfRestaurant);
 
         if (Restaurants.Any(x => x.Name == name))
-            error.AddMessage(CommonResource.Validation_RestaurantNameShouldBeUnique, nameof(CommonResource.Validation_RestaurantNameShouldBeUnique));
+            error.AddMessage(CommonResource.Validation_RestaurantNameShouldBeUnique);
 
         return error.IsEmpty ? Result.Success() : error;
     }

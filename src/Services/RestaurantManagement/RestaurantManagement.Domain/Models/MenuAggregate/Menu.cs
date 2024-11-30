@@ -21,7 +21,7 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
     public Guid RestaurantId { get; private set; }
 
-    private EntityCollection<MenuItem> MenuItems { get; } = new();
+    protected internal EntityCollection<MenuItem> MenuItems { get; } = new();
 
     public bool IsActive { get; private set; }
     public uint Version { get; set; }

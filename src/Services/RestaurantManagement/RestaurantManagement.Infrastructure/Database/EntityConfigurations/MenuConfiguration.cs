@@ -10,8 +10,7 @@ public class MenuConfiguration : IEntityTypeConfiguration<Menu>
 {
     public void Configure(EntityTypeBuilder<Menu> builder)
     {
-        builder.Ignore("_menuItemDictionary");
-        builder.HasMany(typeof(MenuItem), "MenuItems");
+        builder.HasMany(m => m.MenuItems);
 
         builder.HasOne<Restaurant>()
             .WithMany()
