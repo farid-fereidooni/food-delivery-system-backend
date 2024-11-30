@@ -1,4 +1,4 @@
-using RestaurantManagement.Core.Domain.Dtos;
+using RestaurantManagement.Domain.Dtos;
 
 namespace RestaurantManagement.Api.Dtos;
 

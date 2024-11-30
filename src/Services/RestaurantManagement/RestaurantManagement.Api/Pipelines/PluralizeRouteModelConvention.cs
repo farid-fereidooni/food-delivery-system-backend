@@ -1,6 +1,6 @@
 using Humanizer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using RestaurantManagement.Core.Helpers;
+using RestaurantManagement.Domain.Helpers;
 
 namespace RestaurantManagement.Api.Pipelines;
 

@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using RestaurantManagement.Core.Domain.Contracts;
-using RestaurantManagement.Core.Domain.Exceptions;
-using RestaurantManagement.Core.Domain.Models.FoodAggregate;
-using RestaurantManagement.Core.Domain.Models.FoodTypeAggregate;
-using RestaurantManagement.Core.Domain.Models.MenuAggregate;
-using RestaurantManagement.Core.Domain.Models.MenuCategoryAggregate;
-using RestaurantManagement.Core.Domain.Models.RestaurantAggregate;
+using RestaurantManagement.Domain.Contracts;
+using RestaurantManagement.Domain.Exceptions;
+using RestaurantManagement.Domain.Models.FoodAggregate;
+using RestaurantManagement.Domain.Models.FoodTypeAggregate;
+using RestaurantManagement.Domain.Models.MenuAggregate;
+using RestaurantManagement.Domain.Models.MenuCategoryAggregate;
+using RestaurantManagement.Domain.Models.RestaurantAggregate;
 
 namespace RestaurantManagement.Infrastructure.Database;
 

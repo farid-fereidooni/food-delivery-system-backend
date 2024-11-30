@@ -1,6 +1,6 @@
-using RestaurantManagement.Core.Domain.Contracts;
-using RestaurantManagement.Core.Domain.Dtos;
-using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Domain.Contracts;
+using RestaurantManagement.Domain.Dtos;
+using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Services;
 

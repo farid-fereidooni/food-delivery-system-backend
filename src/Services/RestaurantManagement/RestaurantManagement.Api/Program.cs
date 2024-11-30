@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Pipelines;
 using RestaurantManagement.Api.Services;
-using RestaurantManagement.Core.Application.Command.Admin;
-using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Application.Command.Admin;
+using RestaurantManagement.Domain.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 

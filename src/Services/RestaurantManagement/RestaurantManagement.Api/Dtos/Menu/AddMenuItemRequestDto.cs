@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using RestaurantManagement.Core.Application.Command.Menus;
-using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Application.Command.Menus;
+using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Dtos.Menu;
 

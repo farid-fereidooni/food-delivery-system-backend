@@ -36,6 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\RestaurantManagement.Application\RestaurantManagement.Application.csproj" />
       <ProjectReference Include="..\RestaurantManagement.Infrastructure\RestaurantManagement.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

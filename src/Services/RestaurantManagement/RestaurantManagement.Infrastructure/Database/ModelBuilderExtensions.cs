@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Domain.Contracts;
 
 namespace RestaurantManagement.Infrastructure.Database;
 

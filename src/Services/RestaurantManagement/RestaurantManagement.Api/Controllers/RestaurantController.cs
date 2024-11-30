@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Dtos.Restaurant;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Core.Application.Command.Restaurants;
+using RestaurantManagement.Application.Command.Restaurants;
 
 namespace RestaurantManagement.Api.Controllers;
 

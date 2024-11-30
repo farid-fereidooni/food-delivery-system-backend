@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using RestaurantManagement.Api.Filters;
-using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Pipelines;
 

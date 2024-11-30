@@ -1,5 +1,5 @@
-using RestaurantManagement.Core.Application.Services;
-using RestaurantManagement.Core.Domain.Contracts;
+using RestaurantManagement.Application.Services;
+using RestaurantManagement.Domain.Contracts;
 
 namespace RestaurantManagement.Api.Pipelines;
 

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RestaurantManagement.Core.Domain.Models.FoodAggregate;
-using RestaurantManagement.Core.Domain.Models.FoodTypeAggregate;
-using RestaurantManagement.Core.Domain.Models.RestaurantAggregate;
+using RestaurantManagement.Domain.Models.FoodAggregate;
+using RestaurantManagement.Domain.Models.FoodTypeAggregate;
+using RestaurantManagement.Domain.Models.RestaurantAggregate;
 
 namespace RestaurantManagement.Infrastructure.Database.EntityConfigurations;
 

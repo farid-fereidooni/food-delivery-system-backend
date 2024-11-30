@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.Extensions.Localization;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Pipelines;
 

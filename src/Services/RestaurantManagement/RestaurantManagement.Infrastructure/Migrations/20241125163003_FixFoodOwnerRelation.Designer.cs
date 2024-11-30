@@ -26,7 +26,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.Food", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodAggregate.Food", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -44,7 +44,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Specification", "RestaurantManagement.Core.Domain.Models.FoodAggregate.Food.Specification#FoodSpecification", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Specification", "RestaurantManagement.Domain.Domain.Models.FoodAggregate.Food.Specification#FoodSpecification", b1 =>
                         {
                             b1.Property<string>("Description")
                                 .HasColumnType("text")
@@ -69,7 +69,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("foods", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.FoodTypeFood", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodAggregate.FoodTypeFood", b =>
                 {
                     b.Property<Guid>("FoodId")
                         .HasColumnType("uuid")
@@ -88,7 +88,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("food_type_food", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodTypeAggregate.FoodType", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodTypeAggregate.FoodType", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -113,7 +113,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("food_types", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuAggregate.Menu", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuAggregate.Menu", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -150,7 +150,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("menus", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuAggregate.MenuItem", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuAggregate.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -199,7 +199,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("menu_items", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuCategoryAggregate.MenuCategory", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuCategoryAggregate.MenuCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -228,7 +228,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("menu_categories", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.Restaurant", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.Restaurant", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -256,7 +256,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Address", "RestaurantManagement.Core.Domain.Models.RestaurantAggregate.Restaurant.Address#Address", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Address", "RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.Restaurant.Address#Address", b1 =>
                         {
                             b1.IsRequired();
 
@@ -290,7 +290,7 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("restaurants", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.RestaurantOwner", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.RestaurantOwner", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -310,9 +310,9 @@ namespace RestaurantManagement.Infrastructure.Migrations
                     b.ToTable("restaurant_owners", (string)null);
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.Food", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodAggregate.Food", b =>
                 {
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.RestaurantOwner", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.RestaurantOwner", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -320,16 +320,16 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasConstraintName("fk_foods_restaurant_owners_owner_id");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.FoodTypeFood", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodAggregate.FoodTypeFood", b =>
                 {
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.FoodAggregate.Food", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.FoodAggregate.Food", null)
                         .WithMany("FoodTypeFoods")
                         .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_food_type_food_foods_food_id");
 
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.FoodTypeAggregate.FoodType", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.FoodTypeAggregate.FoodType", null)
                         .WithMany()
                         .HasForeignKey("FoodTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,9 +337,9 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasConstraintName("fk_food_type_food_food_types_food_type_id");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuAggregate.Menu", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuAggregate.Menu", b =>
                 {
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.Restaurant", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.Restaurant", null)
                         .WithMany()
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -347,16 +347,16 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasConstraintName("fk_menus_restaurants_restaurant_id");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuAggregate.MenuItem", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuAggregate.MenuItem", b =>
                 {
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.MenuCategoryAggregate.MenuCategory", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.MenuCategoryAggregate.MenuCategory", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_menu_items_menu_categories_category_id");
 
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.MenuAggregate.Menu", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.MenuAggregate.Menu", null)
                         .WithMany("MenuItems")
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -364,9 +364,9 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasConstraintName("fk_menu_items_menus_menu_id");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.Restaurant", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.Restaurant", b =>
                 {
-                    b.HasOne("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.RestaurantOwner", null)
+                    b.HasOne("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.RestaurantOwner", null)
                         .WithMany("Restaurants")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -374,17 +374,17 @@ namespace RestaurantManagement.Infrastructure.Migrations
                         .HasConstraintName("fk_restaurants_restaurant_owners_owner_id");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.FoodAggregate.Food", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.FoodAggregate.Food", b =>
                 {
                     b.Navigation("FoodTypeFoods");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.MenuAggregate.Menu", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.MenuAggregate.Menu", b =>
                 {
                     b.Navigation("MenuItems");
                 });
 
-            modelBuilder.Entity("RestaurantManagement.Core.Domain.Models.RestaurantAggregate.RestaurantOwner", b =>
+            modelBuilder.Entity("RestaurantManagement.Domain.Domain.Models.RestaurantAggregate.RestaurantOwner", b =>
                 {
                     b.Navigation("Restaurants");
                 });

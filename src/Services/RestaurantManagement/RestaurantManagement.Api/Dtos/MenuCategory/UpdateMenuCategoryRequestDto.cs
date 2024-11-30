@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using RestaurantManagement.Core.Application.Command.MenuCategories;
-using RestaurantManagement.Core.Resources;
+using RestaurantManagement.Application.Command.MenuCategories;
+using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Dtos.MenuCategory;
 

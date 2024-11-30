@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using RestaurantManagement.Core.Domain.Contracts;
-using RestaurantManagement.Core.Domain.Models.MenuAggregate;
-using RestaurantManagement.Core.Domain.Models.MenuCategoryAggregate;
+using RestaurantManagement.Domain.Contracts.Command;
+using RestaurantManagement.Domain.Models.MenuCategoryAggregate;
 using RestaurantManagement.Infrastructure.Database;
 
 namespace RestaurantManagement.Infrastructure.Repositories.Command;

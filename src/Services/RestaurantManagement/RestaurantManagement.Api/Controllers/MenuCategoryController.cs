@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Dtos.Menu;
 using RestaurantManagement.Api.Dtos.MenuCategory;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Core.Application.Command.MenuCategories;
+using RestaurantManagement.Application.Command.MenuCategories;
 
 namespace RestaurantManagement.Api.Controllers;
 

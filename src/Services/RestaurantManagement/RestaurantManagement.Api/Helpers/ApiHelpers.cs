@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using RestaurantManagement.Api.Dtos;
-using RestaurantManagement.Core.Domain.Dtos;
+using RestaurantManagement.Domain.Dtos;
 
 namespace RestaurantManagement.Api.Helpers;
 
