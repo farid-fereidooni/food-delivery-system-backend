@@ -18,5 +18,6 @@ public static class PollyHelper
                         "Exception \"{Message}\" occured on connecting to database. retry attempt {retry}",
                         exception.Message,
                         retry);
-                }); }
+                });
+    }
 }
