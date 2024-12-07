@@ -64,16 +64,16 @@ public class ApplicationDbContext(DbContextOptions options, IMediator _mediator)
 
     private async Task DispatchDomainEventsAsync()
     {
-        var domainEntities = ChangeTracker
-            .Entries<Entity>()
+        var aggregateRoots = ChangeTracker
+            .Entries<AggregateRoot>()
             .Where(x => x.Entity.DomainEvents.Count != 0)
             .ToList();
 
-        var domainEvents = domainEntities
+        var domainEvents = aggregateRoots
             .SelectMany(x => x.Entity.DomainEvents)
             .ToList();
 
-        domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+        aggregateRoots.ForEach(e => e.Entity.ClearDomainEvents());
 
         foreach (var domainEvent in domainEvents)
             await _mediator.Publish(domainEvent);

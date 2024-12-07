@@ -33,9 +33,9 @@ public static class ModelBuilderExtensions
     private static IMutableEntityType ApplyEntityConfigurations(
         this IMutableEntityType entityType, ModelBuilder modelBuilder)
     {
-        if (typeof(Entity).IsAssignableFrom(entityType.ClrType))
+        if (typeof(AggregateRoot).IsAssignableFrom(entityType.ClrType))
         {
-            modelBuilder.Entity(entityType.ClrType).Ignore(nameof(Entity.DomainEvents));
+            modelBuilder.Entity(entityType.ClrType).Ignore(nameof(AggregateRoot.DomainEvents));
         }
 
         return entityType;

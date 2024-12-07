@@ -21,8 +21,6 @@ public class Restaurant : Entity
         OwnerId = ownerId;
 
         Status = RestaurantStatus.Inactive;
-
-        AddDomainEvent(new RestaurantCreatedEvent(Id));
     }
 
     public string Name { get; private set; }

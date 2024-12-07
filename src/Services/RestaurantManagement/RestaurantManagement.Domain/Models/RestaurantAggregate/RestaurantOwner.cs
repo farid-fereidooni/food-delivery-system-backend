@@ -1,4 +1,5 @@
 using RestaurantManagement.Domain.Contracts;
+using RestaurantManagement.Domain.DomainEvents;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Exceptions;
 using RestaurantManagement.Domain.Resources;
@@ -41,6 +42,7 @@ public class RestaurantOwner : AggregateRoot
         var restaurant = new Restaurant(name, address, Id);
         Restaurants.Add(restaurant);
 
+        AddDomainEvent(new RestaurantCreatedEvent(restaurant.Id));
         return restaurant.Id;
     }
 
