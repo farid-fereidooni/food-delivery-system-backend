@@ -1,4 +1,5 @@
 using EventBus.Core;
+using EventBus.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -7,14 +8,24 @@ namespace EventBus.Registration;
 public static class RabbitMqRegistration
 {
     public static IServiceCollection AddRabbitMq(
-        this IServiceCollection services, Action<IRabbitMqRegistrationQueueBind> setup)
+        this IServiceCollection services, string host, Action<IRabbitMqRegistrationQueueBind>? setup = null)
     {
         services.AddSingleton<IEventBus, RabbitMqEventBus>();
 
-        var builder = new RabbitMqRegistrationBuilder(services);
-        setup(builder);
+        var eventBusConfiguration = new EventBusConfiguration
+        {
+            Host = host,
+            Subscriptions = new Subscriptions(),
+        };
 
-        services.AddSingleton(builder.Subscriptions);
+        if (setup != null)
+        {
+            var builder = new RabbitMqRegistrationBuilder(services);
+            setup(builder);
+            eventBusConfiguration.Subscriptions = builder.Subscriptions;
+        }
+
+        services.AddSingleton(eventBusConfiguration);
         return services;
     }
 

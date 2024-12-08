@@ -9,13 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.AddCustomSwagger();
 
-builder.ConfigureSettings();
 builder.AddInfrastructureServices();
 builder.AddCoreServices();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-
 builder.AddCustomOpenIdServer();
+builder.AddEventBus();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(CreateFoodTypeAdminCommand).Assembly));
 
 builder.AddCustomControllers();

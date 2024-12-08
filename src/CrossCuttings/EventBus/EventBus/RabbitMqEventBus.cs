@@ -18,7 +18,6 @@ namespace EventBus;
 internal class RabbitMqEventBus : IEventBus, IDisposable
 {
     private readonly EventBusConfiguration _eventBusConfiguration;
-    private readonly Subscriptions _subscriptions;
     private readonly ILogger<RabbitMqEventBus> _logger;
     private readonly IServiceProvider _services;
     private IConnection? _connection = null;
@@ -33,11 +32,11 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
 
     public RabbitMqEventBus(
         IOptions<EventBusConfiguration> eventBusConfiguration,
-        Subscriptions subscriptions,
+        EventBusConfiguration configuration,
         ILogger<RabbitMqEventBus> logger,
         IServiceProvider services)
     {
-        _subscriptions = subscriptions;
+        _eventBusConfiguration = configuration;
         _logger = logger;
         _services = services;
         _eventBusConfiguration = eventBusConfiguration.Value;
@@ -69,7 +68,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         if (!IsConnected)
             await Connect();
 
-        foreach (var exchange in _subscriptions)
+        foreach (var exchange in _eventBusConfiguration.Subscriptions)
         {
             var exchangeChannel = await _connection.CreateChannelAsync();
             _consumerChannels[exchange.Key] = exchangeChannel;
@@ -115,7 +114,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
     {
         var eventName = eventArgs.RoutingKey;
 
-        var eventType = _subscriptions[eventArgs.Exchange].GetEvent(eventName);
+        var eventType = _eventBusConfiguration.Subscriptions[eventArgs.Exchange].GetEvent(eventName);
         var message = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
         var @event = JsonSerializer.Deserialize(message, eventType, _jsonSerializerOptions);
 

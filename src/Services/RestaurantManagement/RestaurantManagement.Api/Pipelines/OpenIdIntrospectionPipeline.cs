@@ -8,6 +8,8 @@ public static class OpenIdIntrospectionPipeline
     public static WebApplicationBuilder AddCustomOpenIdServer(this WebApplicationBuilder builder)
     {
         var identityConfiguration = builder.Configuration.GetSection(nameof(IdentityConfiguration));
+        builder.Services.Configure<IdentityConfiguration>(identityConfiguration);
+
         builder.Services.AddOpenIddict()
             .AddValidation(options =>
             {
