@@ -1,10 +1,12 @@
 using EventBus.Core;
+using EventBus.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EventBus.Registration;
 
 public interface IRabbitMqRegistrationQueueBind
 {
+    IRabbitMqRegistrationQueueBind AddEventLogService<TUnitOfWork>() where TUnitOfWork : IEventLogUnitOfWork;
     IRabbitMqRegistrationHandlerBind<TEvent> AddSubscription<TEvent>(string topic, string queueName)
         where TEvent : IEvent;
 }
@@ -25,6 +27,12 @@ internal class RabbitMqRegistrationBuilder : IRabbitMqRegistrationQueueBind
     public RabbitMqRegistrationBuilder(IServiceCollection serviceCollection)
     {
         _serviceCollection = serviceCollection;
+    }
+
+    public IRabbitMqRegistrationQueueBind AddEventLogService<TUnitOfWork>() where TUnitOfWork : IEventLogUnitOfWork
+    {
+        _serviceCollection.AddScoped<IEventLogUnitOfWork>(s => s.GetRequiredService<TUnitOfWork>());
+        return this;
     }
 
     public IRabbitMqRegistrationHandlerBind<TEvent> AddSubscription<TEvent>(string topic, string queueName)

@@ -25,7 +25,6 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
     private readonly Dictionary<string, IChannel> _consumerChannels = new();
 
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     [MemberNotNullWhen(true, nameof(_connection))]
     private bool IsConnected => _connection is not null && _connection.IsOpen;
@@ -40,27 +39,34 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         _logger = logger;
         _services = services;
         _eventBusConfiguration = eventBusConfiguration.Value;
-
-        _jsonSerializerOptions = new JsonSerializerOptions();
-        _jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 
-    public async Task PublishAsync<TEvent>(
-        string topic, TEvent @event, CancellationToken cancellationToken = default)
-        where TEvent : IEvent
+    public async Task PublishAsync(string topic, IEvent @event, CancellationToken cancellationToken = default)
+    {
+        var eventName = NameOfEvent(@event);
+        var message = JsonSerializer.SerializeToUtf8Bytes(@event, Constants.JsonSerializerOptions);
+
+        await PublishAsyncCore(topic, eventName, message, cancellationToken);
+    }
+
+    public async Task PublishAsync(Message message, CancellationToken cancellationToken = default)
+    {
+        var body = Encoding.UTF8.GetBytes(message.Content);
+        await PublishAsyncCore(message.Topic, message.EventName, body, cancellationToken);
+    }
+
+    private async Task PublishAsyncCore(
+        string topic, string eventName, byte[] content, CancellationToken cancellationToken = default)
     {
         if (!IsConnected)
             await Connect(cancellationToken);
-
-        var eventName = NameOfEvent(@event);
 
         await using var channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         await channel.ExchangeDeclareAsync(
             topic, type: ExchangeType.Direct, durable: true, autoDelete: false, cancellationToken: cancellationToken);
 
-        var message = JsonSerializer.SerializeToUtf8Bytes(@event, _jsonSerializerOptions);
-        await channel.BasicPublishAsync(topic, eventName, body: message, cancellationToken: cancellationToken);
+        await channel.BasicPublishAsync(topic, eventName, body: content, cancellationToken: cancellationToken);
     }
 
     public async Task StartConsumeAsync()
@@ -116,7 +122,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
 
         var eventType = _eventBusConfiguration.Subscriptions[eventArgs.Exchange].GetEvent(eventName);
         var message = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-        var @event = JsonSerializer.Deserialize(message, eventType, _jsonSerializerOptions);
+        var @event = JsonSerializer.Deserialize(message, eventType, Constants.JsonSerializerOptions);
 
         if (@event is null)
             throw new Exception("Invalid configuration of subscription in the eventbus");
