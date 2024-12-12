@@ -18,6 +18,7 @@ public class EventLogService : IEventLogService
     {
         var eventLog = new EventLog(@event, topic, transactionId);
         await _unitOfWork.EventLogs.AddAsync(eventLog, cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Message>> GetTransactionPendingEvents(
@@ -36,22 +37,37 @@ public class EventLogService : IEventLogService
         });
     }
 
-    public void MarkEventAsPublishedAsync(Guid eventId)
+    public async Task<IEnumerable<Message>> GetFailedEvents(CancellationToken cancellationToken = default)
     {
-        UpdateEventStatus(eventId, EventStateEnum.Published);
+        var logs = await _unitOfWork.EventLogs
+            .OrderBy(x => x.EventDate)
+            .Where(e => e.State == EventStateEnum.PublishedFailed)
+            .ToListAsync(cancellationToken);
+
+        return logs.Select(s => new Message
+        {
+            EventName = s.EventName,
+            Content = s.Content,
+            Topic = s.Topic,
+        });
     }
 
-    public void MarkEventAsInProgressAsync(Guid eventId)
+    public Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken)
     {
-        UpdateEventStatus(eventId, EventStateEnum.InProgress);
+        return UpdateEventStatus(eventId, EventStateEnum.Published, cancellationToken);
     }
 
-    public void MarkEventAsFailedAsync(Guid eventId)
+    public Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken)
     {
-        UpdateEventStatus(eventId, EventStateEnum.PublishedFailed);
+        return UpdateEventStatus(eventId, EventStateEnum.InProgress, cancellationToken);
     }
 
-    private void UpdateEventStatus(Guid eventId, EventStateEnum status)
+    public Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken)
+    {
+        return UpdateEventStatus(eventId, EventStateEnum.PublishedFailed, cancellationToken);
+    }
+
+    private async Task UpdateEventStatus(Guid eventId, EventStateEnum status, CancellationToken cancellationToken)
     {
         var eventLogEntry = _unitOfWork.EventLogs.Single(ie => ie.EventId == eventId);
         eventLogEntry.State = status;
@@ -60,5 +76,6 @@ public class EventLogService : IEventLogService
             eventLogEntry.TimesSent++;
 
         _unitOfWork.EventLogs.Update(eventLogEntry);
+        await _unitOfWork.SaveAsync(cancellationToken);
     }
 }

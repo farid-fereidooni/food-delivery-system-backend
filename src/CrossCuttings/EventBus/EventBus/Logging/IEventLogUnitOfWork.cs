@@ -6,4 +6,5 @@ namespace EventBus.Logging;
 public interface IEventLogUnitOfWork
 {
     DbSet<EventLog> EventLogs { get; }
+    Task SaveAsync(CancellationToken cancellationToken = default);
 }

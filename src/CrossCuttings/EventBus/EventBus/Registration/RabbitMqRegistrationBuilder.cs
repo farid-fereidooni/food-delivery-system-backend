@@ -21,7 +21,7 @@ public interface IRabbitMqRegistrationHandlerBind<TEvent> where TEvent : IEvent
 internal class RabbitMqRegistrationBuilder : IRabbitMqRegistrationQueueBind
 {
     private readonly IServiceCollection _serviceCollection;
-    public Subscriptions Subscriptions { get; } = new();
+    public Subscriptions Subscriptions { get; internal set; } = new();
 
 
     public RabbitMqRegistrationBuilder(IServiceCollection serviceCollection)
@@ -39,7 +39,7 @@ internal class RabbitMqRegistrationBuilder : IRabbitMqRegistrationQueueBind
         where TEvent : IEvent
     {
         Subscriptions.AddSubscription<TEvent>(topic, queueName);
-        return new RabbitMqRegistrationHandlerBuilder<TEvent>(_serviceCollection);
+        return new RabbitMqRegistrationHandlerBuilder<TEvent>(_serviceCollection, Subscriptions);
     }
 }
 
@@ -49,8 +49,11 @@ internal class RabbitMqRegistrationHandlerBuilder<TEvent>
 {
     private readonly IServiceCollection _serviceCollection;
 
-    public RabbitMqRegistrationHandlerBuilder(IServiceCollection serviceCollection) : base(serviceCollection)
+    public RabbitMqRegistrationHandlerBuilder(
+        IServiceCollection serviceCollection, Subscriptions subscriptions)
+        : base(serviceCollection)
     {
+        Subscriptions = subscriptions;
         _serviceCollection = serviceCollection;
     }
 
