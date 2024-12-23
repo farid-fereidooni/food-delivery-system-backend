@@ -2,5 +2,8 @@ namespace RestaurantManagement.Domain.Contracts;
 
 public interface IUnitOfWork
 {
-    Task CommitAsync(CancellationToken cancellationToken = default);
+    ValueTask<Guid> BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Guid? CurrentTransactionId { get; }
+    Task SaveAsync(CancellationToken cancellationToken = default);
+    ValueTask CommitTransaction(Guid transactionId, CancellationToken cancellationToken = default);
 }

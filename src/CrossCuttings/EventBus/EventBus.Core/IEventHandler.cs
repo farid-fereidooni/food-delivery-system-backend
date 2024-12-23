@@ -1,16 +1,16 @@
 namespace EventBus.Core;
 
-public interface IEventHandler<in TEvent> where TEvent : IEvent
+public interface IEventHandler<in TEvent> where TEvent : Event
 {
-    Task HandleAsync(TEvent @event);
+    Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }
 
 public interface IEventHandlerProxy
 {
-    Task HandleAsync(object @event);
+    Task HandleAsync(object @event, CancellationToken cancellationToken = default);
 }
 
-public class EventHandlerProxy<TEvent> : IEventHandler<TEvent>, IEventHandlerProxy where TEvent : IEvent
+public class EventHandlerProxy<TEvent> : IEventHandler<TEvent>, IEventHandlerProxy where TEvent : Event
 {
     private readonly IEventHandler<TEvent> _innerHandler;
 
@@ -19,13 +19,13 @@ public class EventHandlerProxy<TEvent> : IEventHandler<TEvent>, IEventHandlerPro
         _innerHandler = innerHandler;
     }
 
-    Task IEventHandler<TEvent>.HandleAsync(TEvent @event)
+    Task IEventHandler<TEvent>.HandleAsync(TEvent @event, CancellationToken cancellationToken)
     {
-        return _innerHandler.HandleAsync(@event);
+        return _innerHandler.HandleAsync(@event, cancellationToken);
     }
 
-    Task IEventHandlerProxy.HandleAsync(object @event)
+    public Task HandleAsync(object @event, CancellationToken cancellationToken = default)
     {
-        return _innerHandler.HandleAsync((TEvent)@event);
+        return _innerHandler.HandleAsync((TEvent)@event, cancellationToken);
     }
 }

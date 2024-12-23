@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Admin;
 
-public record UpdateFoodTypeAdminCommand(Guid Id, string Name) : IRequest<Result>;
+public record UpdateFoodTypeAdminCommand(Guid Id, string Name) : ICommand<Result>;
 
 public class UpdateFoodTypeAdminCommandHandler : IRequestHandler<UpdateFoodTypeAdminCommand, Result>
 {
@@ -29,7 +29,7 @@ public class UpdateFoodTypeAdminCommandHandler : IRequestHandler<UpdateFoodTypeA
             return new Error(CommonResource.App_FoodNotFound).WithReason(ErrorReason.NotFound);
 
         foodType.Rename(request.Name);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

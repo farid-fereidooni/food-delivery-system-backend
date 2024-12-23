@@ -14,7 +14,7 @@ public class EventLogService : IEventLogService
     }
 
     public async Task AddEventAsync(
-        IEvent @event, string topic, Guid transactionId, CancellationToken cancellationToken = default)
+        Event @event, string topic, Guid transactionId, CancellationToken cancellationToken = default)
     {
         var eventLog = new EventLog(@event, topic, transactionId);
         await _unitOfWork.EventLogs.AddAsync(eventLog, cancellationToken);
@@ -26,11 +26,12 @@ public class EventLogService : IEventLogService
     {
         var logs = await _unitOfWork.EventLogs
             .OrderBy(x => x.EventDate)
-            .Where(e => e.TransactionId == transactionId && e.State == EventStateEnum.NotPublished)
+            .Where(e => e.State == EventStateEnum.NotPublished && e.TransactionId == transactionId)
             .ToListAsync(cancellationToken);
 
         return logs.Select(s => new Message
         {
+            EventId = s.EventId,
             EventName = s.EventName,
             Content = s.Content,
             Topic = s.Topic,
@@ -46,6 +47,7 @@ public class EventLogService : IEventLogService
 
         return logs.Select(s => new Message
         {
+            EventId = s.EventId,
             EventName = s.EventName,
             Content = s.Content,
             Topic = s.Topic,

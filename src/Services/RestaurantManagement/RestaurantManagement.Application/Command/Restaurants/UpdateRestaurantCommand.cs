@@ -13,7 +13,7 @@ public record UpdateRestaurantCommand(
     string Street,
     string City,
     string State,
-    string ZipCode) : IRequest<Result>;
+    string ZipCode) : ICommand<Result>;
 
 public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCommand, Result>
 {
@@ -44,7 +44,7 @@ public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCo
 
         var address = Address.Create(request.Street, request.City, request.State, request.ZipCode);
         owner.UpdateRestaurantInfo(request.Id, request.Name, address);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

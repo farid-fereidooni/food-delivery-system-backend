@@ -1,4 +1,4 @@
-using RestaurantManagement.Domain.Models.FoodTypeAggregate;
+using RestaurantManagement.Domain.Models.Command.FoodTypeAggregate;
 
 namespace RestaurantManagement.Domain.Contracts.Command;
 

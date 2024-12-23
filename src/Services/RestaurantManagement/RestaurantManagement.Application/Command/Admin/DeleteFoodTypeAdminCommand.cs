@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Admin;
 
-public record DeleteFoodTypeAdminCommand(Guid Id) : IRequest<Result>;
+public record DeleteFoodTypeAdminCommand(Guid Id) : ICommand<Result>;
 
 public class DeleteFoodTypeAdminCommandHandler : IRequestHandler<DeleteFoodTypeAdminCommand, Result>
 {
@@ -29,7 +29,7 @@ public class DeleteFoodTypeAdminCommandHandler : IRequestHandler<DeleteFoodTypeA
             return new Error(CommonResource.App_FoodNotFound).WithReason(ErrorReason.NotFound);
 
         await _foodTypeRepository.DeleteAsync(foodType, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

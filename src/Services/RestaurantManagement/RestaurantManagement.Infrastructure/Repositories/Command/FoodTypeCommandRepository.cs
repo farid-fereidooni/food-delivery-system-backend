@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Domain.Contracts.Command;
-using RestaurantManagement.Domain.Models.FoodTypeAggregate;
-using RestaurantManagement.Infrastructure.Database;
+using RestaurantManagement.Domain.Models.Command.FoodTypeAggregate;
+using RestaurantManagement.Infrastructure.Database.Command;
 
 namespace RestaurantManagement.Infrastructure.Repositories.Command;
 
 public class FoodTypeCommandRepository : BaseCommandRepository<FoodType>, IFoodTypeCommandRepository
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly CommandDbContext _dbContext;
 
-    public FoodTypeCommandRepository(ApplicationDbContext dbContext) : base(dbContext.FoodTypes)
+    public FoodTypeCommandRepository(CommandDbContext dbContext) : base(dbContext.FoodTypes)
     {
         _dbContext = dbContext;
     }

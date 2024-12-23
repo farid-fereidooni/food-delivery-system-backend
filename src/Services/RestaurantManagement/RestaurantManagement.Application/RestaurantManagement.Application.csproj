@@ -7,10 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Query\" />
+      <Folder Include="IntegrationEvents\" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\CrossCuttings\EventBus\EventBus.Core\EventBus.Core.csproj" />
       <ProjectReference Include="..\RestaurantManagement.Domain\RestaurantManagement.Domain.csproj" />
     </ItemGroup>
 

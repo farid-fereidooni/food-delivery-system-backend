@@ -1,7 +1,7 @@
+using EventBus.Registration;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Pipelines;
 using RestaurantManagement.Api.Services;
-using RestaurantManagement.Application.Command.Admin;
 using RestaurantManagement.Domain.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +15,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.AddCustomOpenIdServer();
 builder.AddEventBus();
-builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(CreateFoodTypeAdminCommand).Assembly));
-
+builder.AddApplicationServices();
 builder.AddCustomControllers();
 
 builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
@@ -41,4 +40,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+await app.StartRabbitMq();
 app.Run();

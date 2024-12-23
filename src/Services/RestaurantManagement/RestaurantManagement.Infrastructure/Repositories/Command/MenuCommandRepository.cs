@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Domain.Contracts.Command;
-using RestaurantManagement.Domain.Models.MenuAggregate;
-using RestaurantManagement.Infrastructure.Database;
+using RestaurantManagement.Domain.Models.Command.MenuAggregate;
+using RestaurantManagement.Infrastructure.Database.Command;
 
 namespace RestaurantManagement.Infrastructure.Repositories.Command;
 
 public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRepository
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly CommandDbContext _dbContext;
 
-    public MenuCommandRepository(ApplicationDbContext dbContext) : base(dbContext.Menus)
+    public MenuCommandRepository(CommandDbContext dbContext) : base(dbContext.Menus)
     {
         _dbContext = dbContext;
     }
@@ -18,7 +18,7 @@ public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRe
     {
         return await _dbContext.Menus
             .Where(m => m.Id == id)
-            .Include("MenuItems")
+            .Include(i => i.MenuItems)
             .SingleOrDefaultAsync(cancellationToken);
     }
 
@@ -27,7 +27,7 @@ public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRe
         return await _dbContext.Menus
             .Where(m => m.Id == menuId
                 && _dbContext.Restaurants.Any(r => r.Id == m.RestaurantId && r.OwnerId == ownerId))
-            .Include("MenuItems")
+            .Include(i => i.MenuItems)
             .SingleOrDefaultAsync(cancellationToken);
     }
 

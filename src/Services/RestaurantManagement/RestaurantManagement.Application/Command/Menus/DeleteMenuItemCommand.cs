@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record DeleteMenuItemCommand(Guid MenuId, Guid MenuItemId) : IRequest<Result>;
+public record DeleteMenuItemCommand(Guid MenuId, Guid MenuItemId) : ICommand<Result>;
 
 public class DeleteMenuItemCommandHandler : IRequestHandler<DeleteMenuItemCommand, Result>
 {
@@ -36,7 +36,7 @@ public class DeleteMenuItemCommandHandler : IRequestHandler<DeleteMenuItemComman
             return new Error(CommonResource.App_MenuNotFound);
 
         menu.RemoveMenuItem(request.MenuItemId);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

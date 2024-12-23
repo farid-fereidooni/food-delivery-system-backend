@@ -10,7 +10,11 @@ public static class PersistenceConfigure
         var builder = modelBuilder.Entity<EventLog>();
 
         builder.HasKey(k => k.EventId);
-        builder.HasIndex(i => i.TransactionId);
+        builder.HasIndex(i => new { i.State, i.TransactionId });
+
+        builder.Property(p => p.EventName).HasMaxLength(70);
+        builder.Property(p => p.Topic).HasMaxLength(50);
+        builder.Property(p => p.Content);
 
         builder.Property(p => p.State).HasConversion<string>();
     }

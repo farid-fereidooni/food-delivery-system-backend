@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Domain.Contracts.Command;
-using RestaurantManagement.Domain.Models.RestaurantAggregate;
-using RestaurantManagement.Infrastructure.Database;
+using RestaurantManagement.Domain.Models.Command.RestaurantAggregate;
+using RestaurantManagement.Infrastructure.Database.Command;
 
 namespace RestaurantManagement.Infrastructure.Repositories.Command;
 
 public class RestaurantOwnerCommandRepository
     : BaseCommandRepository<RestaurantOwner>, IRestaurantOwnerCommandRepository
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly CommandDbContext _dbContext;
 
-    public RestaurantOwnerCommandRepository(ApplicationDbContext dbContext) : base(dbContext.RestaurantOwners)
+    public RestaurantOwnerCommandRepository(CommandDbContext dbContext) : base(dbContext.RestaurantOwners)
     {
         _dbContext = dbContext;
     }

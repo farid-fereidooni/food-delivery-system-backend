@@ -4,18 +4,18 @@ namespace EventBus;
 
 internal class Subscriptions : Dictionary<string, Queues>
 {
-    public void AddSubscription<TEvent>(string exchangeName, string queueName) where TEvent : IEvent
+    public void AddSubscription<TEvent>(string exchangeName, string queueName) where TEvent : Event
     {
         var eventType = typeof(TEvent);
-
-        if (this.Any(a => a.Value.HasQueue(queueName)))
-            throw new Exception($"Queue {queueName} already bound to an exchange");
 
         if (this.Any(a => a.Value.HasEvent(eventType)))
             throw new Exception($"Event {eventType.Name} already bound to an exchange and a queue");
 
         if (!ContainsKey(exchangeName))
         {
+            if (this.Any(a => a.Value.HasQueue(queueName)))
+                throw new Exception($"Queue {queueName} already bound to an exchange");
+
             var queueManager = new Queues();
             queueManager.AddQueue(queueName, eventType);
             this[exchangeName] = queueManager;

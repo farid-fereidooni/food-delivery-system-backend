@@ -29,13 +29,15 @@ public static class RabbitMqRegistration
         return services;
     }
 
-    public static async Task StartRabbitMq(this IHost host, CancellationToken token)
+    public static async Task StartRabbitMq(this IHost host)
     {
         using var scope = host.Services.CreateScope();
+        var hostLifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
+
         var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
         if (eventBus is not RabbitMqEventBus)
             throw new Exception("A RabbitMq event bus must be provided");
 
-        await eventBus.StartConsumeAsync();
+        await eventBus.StartConsumeAsync(hostLifetime.ApplicationStopping);
     }
 }

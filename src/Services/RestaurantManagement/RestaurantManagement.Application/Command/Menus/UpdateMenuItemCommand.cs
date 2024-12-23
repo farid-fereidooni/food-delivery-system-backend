@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record UpdateMenuItemCommand(Guid MenuId, Guid MenuItemId, Guid CategoryId) : IRequest<Result>;
+public record UpdateMenuItemCommand(Guid MenuId, Guid MenuItemId, Guid CategoryId) : ICommand<Result>;
 
 public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemCommand, Result>
 {
@@ -40,7 +40,7 @@ public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemComman
             .AndThenAsync(async () =>
             {
                 menu.ChangeMenuItemCategory(request.MenuItemId, request.CategoryId);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _unitOfWork.SaveAsync(cancellationToken);
             });
     }
 }

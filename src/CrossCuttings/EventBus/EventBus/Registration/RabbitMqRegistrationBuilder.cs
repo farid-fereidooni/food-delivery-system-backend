@@ -8,10 +8,10 @@ public interface IRabbitMqRegistrationQueueBind
 {
     IRabbitMqRegistrationQueueBind AddEventLogService<TUnitOfWork>() where TUnitOfWork : IEventLogUnitOfWork;
     IRabbitMqRegistrationHandlerBind<TEvent> AddSubscription<TEvent>(string topic, string queueName)
-        where TEvent : IEvent;
+        where TEvent : Event;
 }
 
-public interface IRabbitMqRegistrationHandlerBind<TEvent> where TEvent : IEvent
+public interface IRabbitMqRegistrationHandlerBind<TEvent> : IRabbitMqRegistrationQueueBind where TEvent : Event
 {
     IRabbitMqRegistrationHandlerBind<TEvent> AddHandler<TEventHandler>()
         where TEventHandler : class, IEventHandler<TEvent>;
@@ -32,11 +32,12 @@ internal class RabbitMqRegistrationBuilder : IRabbitMqRegistrationQueueBind
     public IRabbitMqRegistrationQueueBind AddEventLogService<TUnitOfWork>() where TUnitOfWork : IEventLogUnitOfWork
     {
         _serviceCollection.AddScoped<IEventLogUnitOfWork>(s => s.GetRequiredService<TUnitOfWork>());
+        _serviceCollection.AddScoped<IEventLogService, EventLogService>();
         return this;
     }
 
     public IRabbitMqRegistrationHandlerBind<TEvent> AddSubscription<TEvent>(string topic, string queueName)
-        where TEvent : IEvent
+        where TEvent : Event
     {
         Subscriptions.AddSubscription<TEvent>(topic, queueName);
         return new RabbitMqRegistrationHandlerBuilder<TEvent>(_serviceCollection, Subscriptions);
@@ -45,7 +46,7 @@ internal class RabbitMqRegistrationBuilder : IRabbitMqRegistrationQueueBind
 
 internal class RabbitMqRegistrationHandlerBuilder<TEvent>
     : RabbitMqRegistrationBuilder, IRabbitMqRegistrationHandlerBind<TEvent>
-    where TEvent : IEvent
+    where TEvent : Event
 {
     private readonly IServiceCollection _serviceCollection;
 

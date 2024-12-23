@@ -30,7 +30,6 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
     private bool IsConnected => _connection is not null && _connection.IsOpen;
 
     public RabbitMqEventBus(
-        IOptions<EventBusConfiguration> eventBusConfiguration,
         EventBusConfiguration configuration,
         ILogger<RabbitMqEventBus> logger,
         IServiceProvider services)
@@ -38,10 +37,9 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         _eventBusConfiguration = configuration;
         _logger = logger;
         _services = services;
-        _eventBusConfiguration = eventBusConfiguration.Value;
     }
 
-    public async Task PublishAsync(string topic, IEvent @event, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(string topic, Event @event, CancellationToken cancellationToken = default)
     {
         var eventName = NameOfEvent(@event);
         var message = JsonSerializer.SerializeToUtf8Bytes(@event, Constants.JsonSerializerOptions);
@@ -69,21 +67,22 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         await channel.BasicPublishAsync(topic, eventName, body: content, cancellationToken: cancellationToken);
     }
 
-    public async Task StartConsumeAsync()
+    public async Task StartConsumeAsync(CancellationToken cancellationToken = default)
     {
         if (!IsConnected)
-            await Connect();
+            await Connect(cancellationToken);
 
         foreach (var exchange in _eventBusConfiguration.Subscriptions)
         {
-            var exchangeChannel = await _connection.CreateChannelAsync();
+            var exchangeChannel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
             _consumerChannels[exchange.Key] = exchangeChannel;
 
-            await InitializeQueueAndConsume(exchange.Key, exchangeChannel, exchange.Value);
+            await InitializeQueueAndConsume(exchange.Key, exchangeChannel, exchange.Value, cancellationToken);
         }
     }
 
-    private async Task InitializeQueueAndConsume(string exchange, IChannel channel, Queues queues)
+    private async Task InitializeQueueAndConsume(
+        string exchange, IChannel channel, Queues queues, CancellationToken cancellationToken)
     {
         foreach (var queue in queues)
         {
@@ -92,20 +91,23 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
-                arguments: null);
+                arguments: null,
+                cancellationToken: cancellationToken);
 
-            await BindQueues(exchange, channel, queue.Key, queue.Value);
-            await ConsumeAsync(channel, queue.Key);
+            await BindQueues(exchange, channel, queue.Key, queue.Value, cancellationToken);
+            await ConsumeAsync(channel, queue.Key, cancellationToken);
         }
     }
 
-    private async Task BindQueues(string exchange, IChannel channel, string queueName, Events events)
+    private async Task BindQueues(
+        string exchange, IChannel channel, string queueName, Events events, CancellationToken cancellationToken)
     {;
         foreach (var @event in events)
-            await channel.QueueBindAsync(queue: queueName, exchange: exchange, routingKey: @event.Key);
+            await channel.QueueBindAsync(
+                queue: queueName, exchange: exchange, routingKey: @event.Key, cancellationToken: cancellationToken);
     }
 
-    private async Task ConsumeAsync(IChannel channel, string queueName)
+    private async Task ConsumeAsync(IChannel channel, string queueName, CancellationToken cancellationToken)
     {
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += EventReceived;
@@ -113,7 +115,8 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         await channel.BasicConsumeAsync(
             queue: queueName,
             autoAck: false,
-            consumer: consumer);
+            consumer: consumer,
+            cancellationToken: cancellationToken);
     }
 
     private async Task EventReceived(object sender, BasicDeliverEventArgs eventArgs)
@@ -130,7 +133,34 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         using var scope = _services.CreateScope();
         var handlers = scope.ServiceProvider.GetKeyedServices<IEventHandlerProxy>(eventName);
 
-        await Task.WhenAll(handlers.Select(handler => handler.HandleAsync(@event)));
+        var consumerChannel = _consumerChannels[eventArgs.Exchange];
+        try
+        {
+            await Task.WhenAll(handlers.Select(handler => handler.HandleAsync(@event, eventArgs.CancellationToken)));
+            await TryAck(consumerChannel, eventArgs.DeliveryTag, eventArgs.CancellationToken);
+        }
+        catch (EventIgnoredException)
+        {
+            await consumerChannel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: true);
+        }
+        catch
+        {
+            await consumerChannel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: false);
+        }
+    }
+
+    private async Task TryAck(IChannel channel, ulong deliveryTag, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await channel.BasicAckAsync(deliveryTag, multiple: false, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Basic Ack Failed. The message is being Requeued");
+            await channel.BasicNackAsync(
+                deliveryTag, multiple: false, requeue: true, cancellationToken: cancellationToken);
+        }
     }
 
     [MemberNotNull(nameof(_connection))]
@@ -152,7 +182,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         _connectionLock.Release();
     }
 
-    private string NameOfEvent<TEvent>(TEvent @event) where TEvent : IEvent
+    private string NameOfEvent<TEvent>(TEvent @event) where TEvent : Event
     {
         return @event.GetType().Name;
     }

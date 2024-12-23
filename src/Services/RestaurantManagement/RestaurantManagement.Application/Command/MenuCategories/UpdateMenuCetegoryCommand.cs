@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.MenuCategories;
 
-public record UpdateMenuCategoryCommand(Guid Id, string Name) : IRequest<Result>;
+public record UpdateMenuCategoryCommand(Guid Id, string Name) : ICommand<Result>;
 
 public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCategoryCommand, Result>
 {
@@ -41,7 +41,7 @@ public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCatego
             return new Error(CommonResource.App_CategoryAlreadyExists);
 
         category.Rename(request.Name);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

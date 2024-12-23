@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Restaurants;
 
-public record DeactivateRestaurantCommand(Guid Id) : IRequest<Result>;
+public record DeactivateRestaurantCommand(Guid Id) : ICommand<Result>;
 
 public class DeactivateRestaurantCommandHandler : IRequestHandler<DeactivateRestaurantCommand, Result>
 {
@@ -36,7 +36,7 @@ public class DeactivateRestaurantCommandHandler : IRequestHandler<DeactivateRest
             return new Error(CommonResource.App_YouAreNotOwner);
 
         owner.DeactivateRestaurant(request.Id);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

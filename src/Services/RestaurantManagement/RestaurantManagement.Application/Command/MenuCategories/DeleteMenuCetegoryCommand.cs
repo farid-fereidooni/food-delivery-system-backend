@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.MenuCategories;
 
-public record DeleteMenuCategoryCommand(Guid Id) : IRequest<Result>;
+public record DeleteMenuCategoryCommand(Guid Id) : ICommand<Result>;
 
 public class DeleteMenuCategoryCommandHandler : IRequestHandler<DeleteMenuCategoryCommand, Result>
 {
@@ -37,7 +37,7 @@ public class DeleteMenuCategoryCommandHandler : IRequestHandler<DeleteMenuCatego
             return new Error(CommonResource.App_CategoryNotFound);
 
         await _categoryRepository.DeleteAsync(category, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
     }

@@ -2,11 +2,12 @@ using MediatR;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
+using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
 using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.MenuCategories;
 
-public record CreateMenuCategoryCommand(string Name) : IRequest<Result<EntityCreatedDto>>;
+public record CreateMenuCategoryCommand(string Name) : ICommand<Result<EntityCreatedDto>>;
 
 public class CreateMenuCategoryCommandHandler : IRequestHandler<CreateMenuCategoryCommand, Result<EntityCreatedDto>>
 {
@@ -36,10 +37,10 @@ public class CreateMenuCategoryCommandHandler : IRequestHandler<CreateMenuCatego
         if (await _categoryRepository.ExistsWithNameAsync(ownerId, request.Name, cancellationToken: cancellationToken))
             return new Error(CommonResource.App_CategoryAlreadyExists);
 
-        var category = new Domain.Models.MenuCategoryAggregate.MenuCategory(ownerId, request.Name);
+        var category = new MenuCategory(ownerId, request.Name);
 
         await _categoryRepository.AddAsync(category, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return EntityCreatedDto.From(category.Id);
     }

@@ -1,5 +1,8 @@
 using EventBus.Registration;
+using RestaurantManagement.Application.DenormalizationEventHandlers;
+using RestaurantManagement.Application.DenormalizationEvents.MenuCategories;
 using RestaurantManagement.Domain.Dtos;
+using RestaurantManagement.Infrastructure.Database.Command;
 
 namespace RestaurantManagement.Api.Pipelines;
 
@@ -14,7 +17,15 @@ public static class EventBusPipeline
         if (string.IsNullOrEmpty(host))
             throw new InvalidOperationException("EventBus configuration section is missing or invalid");
 
-        builder.Services.AddRabbitMq(host);
+        var denormalizationBroker = eventBusConfiguration[nameof(EventBusConfiguration.DenormalizationBroker)]!;
+        var denormalizationQueue = eventBusConfiguration[nameof(EventBusConfiguration.DenormalizationQueue)]!;
+
+        builder.Services.AddRabbitMq(host, setup => setup
+            .AddEventLogService<CommandDbContext>()
+            .AddSubscription<MenuCategoryCreatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
+                .AddHandler<MenuCategoryCreatedDenormalizationHandler>()
+            .AddSubscription<MenuCategoryUpdatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
+                .AddHandler<MenuCategoryUpdatedDenormalizationHandler>());
 
         return builder;
     }

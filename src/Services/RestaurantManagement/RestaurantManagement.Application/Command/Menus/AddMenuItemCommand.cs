@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record AddMenuItemCommand(Guid MenuId, Guid CategoryId, Guid FoodId) : IRequest<Result<EntityCreatedDto>>;
+public record AddMenuItemCommand(Guid MenuId, Guid CategoryId, Guid FoodId) : ICommand<Result<EntityCreatedDto>>;
 
 public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Result<EntityCreatedDto>>
 {
@@ -42,7 +42,7 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
         if (itemResult.IsFailure)
             return itemResult.UnwrapError();
 
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
         return EntityCreatedDto.From(itemResult.Unwrap());
     }
 }

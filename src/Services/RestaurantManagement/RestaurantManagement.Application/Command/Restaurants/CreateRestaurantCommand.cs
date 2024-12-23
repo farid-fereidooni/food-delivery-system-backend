@@ -12,7 +12,7 @@ public record CreateRestaurantCommand(
     string Street,
     string City,
     string State,
-    string ZipCode) : IRequest<Result<EntityCreatedDto>>;
+    string ZipCode) : ICommand<Result<EntityCreatedDto>>;
 
 public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCommand, Result<EntityCreatedDto>>
 {
@@ -47,7 +47,7 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
             .AndThenAsync(async () =>
             {
                 var restaurantId = owner.AddRestaurant(request.Name, address);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _unitOfWork.SaveAsync(cancellationToken);
                 return EntityCreatedDto.From(restaurantId);
             });
     }

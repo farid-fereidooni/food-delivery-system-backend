@@ -2,11 +2,12 @@ using MediatR;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
+using RestaurantManagement.Domain.Models.Command.RestaurantAggregate;
 using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.RestaurantOwners;
 
-public record CreateRestaurantOwnerCommand : IRequest<Result<EntityCreatedDto>>;
+public record CreateRestaurantOwnerCommand : ICommand<Result<EntityCreatedDto>>;
 
 public class CreateRestaurantOwnerCommandHandler
     : IRequestHandler<CreateRestaurantOwnerCommand, Result<EntityCreatedDto>>
@@ -35,10 +36,10 @@ public class CreateRestaurantOwnerCommandHandler
         if (await _ownerRepository.ExistsAsync(newOwnerId, cancellationToken: cancellationToken))
             return new Error(CommonResource.App_YouAreAlreadyOwner);
 
-        var owner = new Domain.Models.RestaurantAggregate.RestaurantOwner(newOwnerId);
+        var owner = new RestaurantOwner(newOwnerId);
 
         await _ownerRepository.AddAsync(owner, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return EntityCreatedDto.From(owner.Id);
     }

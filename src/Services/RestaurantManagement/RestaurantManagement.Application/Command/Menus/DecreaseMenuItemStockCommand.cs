@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record DecreaseMenuItemStockCommand(Guid MenuId, Guid MenuItemId, uint Amount) : IRequest<Result>;
+public record DecreaseMenuItemStockCommand(Guid MenuId, Guid MenuItemId, uint Amount) : ICommand<Result>;
 
 public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuItemStockCommand, Result>
 {
@@ -50,7 +50,7 @@ public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuIt
             .AndThenAsync(async () =>
             {
                 menu.DecreaseStock(request.MenuItemId, request.Amount);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _unitOfWork.SaveAsync(cancellationToken);
             });
     }
 }

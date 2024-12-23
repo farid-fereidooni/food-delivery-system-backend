@@ -1,4 +1,4 @@
-using RestaurantManagement.Domain.Models.MenuCategoryAggregate;
+using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
 
 namespace RestaurantManagement.Domain.Contracts.Command;
 

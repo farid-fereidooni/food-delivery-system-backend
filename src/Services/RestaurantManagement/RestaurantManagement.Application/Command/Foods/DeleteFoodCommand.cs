@@ -7,7 +7,7 @@ using RestaurantManagement.Domain.Resources;
 namespace RestaurantManagement.Application.Command.Foods;
 
 public record DeleteFoodCommand(Guid Id)
-    : IRequest<Result>;
+    : ICommand<Result>;
 
 public class DeleteFoodCommandHandler : IRequestHandler<DeleteFoodCommand, Result>
 {
@@ -47,7 +47,7 @@ public class DeleteFoodCommandHandler : IRequestHandler<DeleteFoodCommand, Resul
             return new Error(CommonResource.App_FoodIsAlreadyUsed);
 
         await _foodRepository.DeleteAsync(food, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
         return Result.Success();
     }
 }

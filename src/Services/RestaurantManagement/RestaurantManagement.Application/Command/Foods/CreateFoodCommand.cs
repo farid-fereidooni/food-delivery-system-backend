@@ -2,7 +2,7 @@ using MediatR;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
-using RestaurantManagement.Domain.Models.FoodAggregate;
+using RestaurantManagement.Domain.Models.Command.FoodAggregate;
 using RestaurantManagement.Domain.Resources;
 using RestaurantManagement.Domain.ValueObjects;
 
@@ -13,7 +13,7 @@ public record CreateFoodCommand(
     decimal Price,
     string? Description,
     ICollection<Guid> FoodTypeIds)
-    : IRequest<Result<EntityCreatedDto>>;
+    : ICommand<Result<EntityCreatedDto>>;
 
 public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Result<EntityCreatedDto>>
 {
@@ -52,7 +52,7 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Resul
                     request.FoodTypeIds);
 
                 await _foodRepository.AddAsync(food, cancellationToken);
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _unitOfWork.SaveAsync(cancellationToken);
                 return EntityCreatedDto.From(food.Id);
             });
     }

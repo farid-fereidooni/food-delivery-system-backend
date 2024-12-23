@@ -12,14 +12,14 @@ public class EventLog
     }
 
     [SetsRequiredMembers]
-    public EventLog(IEvent @event, string topic, Guid transactionId)
+    public EventLog(Event @event, string topic, Guid transactionId)
     {
-        EventId = @event.Id;
+        EventId = @event.EventId;
         EventName = @event.GetType().Name;
-        EventDate = @event.CreatedAt;
+        EventDate = @event.EventCreatedAt;
         TransactionId = transactionId;
         TimesSent = 0;
-        Content = JsonSerializer.Serialize(@event, Constants.JsonSerializerOptions);
+        Content = JsonSerializer.Serialize(@event, @event.GetType(), Constants.JsonSerializerOptions);
         State = EventStateEnum.NotPublished;
         Topic = topic;
     }

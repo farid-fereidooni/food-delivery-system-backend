@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Domain.Contracts.Command;
-using RestaurantManagement.Domain.Models.MenuCategoryAggregate;
-using RestaurantManagement.Infrastructure.Database;
+using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
+using RestaurantManagement.Infrastructure.Database.Command;
 
 namespace RestaurantManagement.Infrastructure.Repositories.Command;
 
 public class MenuCategoryCommandRepository : BaseCommandRepository<MenuCategory>, IMenuCategoryCommandRepository
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly CommandDbContext _dbContext;
 
-    public MenuCategoryCommandRepository(ApplicationDbContext dbContext) : base(dbContext.MenuCategories)
+    public MenuCategoryCommandRepository(CommandDbContext dbContext) : base(dbContext.MenuCategories)
     {
         _dbContext = dbContext;
     }

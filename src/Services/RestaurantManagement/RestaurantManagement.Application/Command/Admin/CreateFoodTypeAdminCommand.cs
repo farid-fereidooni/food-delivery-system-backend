@@ -2,11 +2,11 @@ using MediatR;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
-using RestaurantManagement.Domain.Models.FoodTypeAggregate;
+using RestaurantManagement.Domain.Models.Command.FoodTypeAggregate;
 
 namespace RestaurantManagement.Application.Command.Admin;
 
-public record CreateFoodTypeAdminCommand(string Name) : IRequest<Result<EntityCreatedDto>>;
+public record CreateFoodTypeAdminCommand(string Name) : ICommand<Result<EntityCreatedDto>>;
 
 public class CreateFoodTypeAdminCommandHandler : IRequestHandler<CreateFoodTypeAdminCommand, Result<EntityCreatedDto>>
 {
@@ -27,7 +27,7 @@ public class CreateFoodTypeAdminCommandHandler : IRequestHandler<CreateFoodTypeA
         var foodType = new FoodType(request.Name);
 
         await _foodTypeRepository.AddAsync(foodType, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
         return EntityCreatedDto.From(foodType.Id);
     }

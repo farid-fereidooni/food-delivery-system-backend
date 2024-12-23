@@ -13,7 +13,7 @@ public record UpdateFoodCommand(
     decimal Price,
     string? Description,
     ICollection<Guid> FoodTypeIds)
-    : IRequest<Result>;
+    : ICommand<Result>;
 
 public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, Result>
 {
@@ -65,7 +65,7 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, Resul
         food.SetFoodTypes(request.FoodTypeIds);
         food.UpdateFoodSpecification(newFoodSpecificationResult.Unwrap());
 
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.SaveAsync(cancellationToken);
         return Result.Success();
     }
 }
