@@ -27,4 +27,10 @@ public record struct FoodSpecification : IValueObject
 
         return Result.Success();
     }
+
+    public static Result<FoodSpecification> TryCreate(string name, decimal price, string? description = null)
+    {
+        return Validate(name, price, description)
+            .AndThen(() => new FoodSpecification(name, price, description));
+    }
 }

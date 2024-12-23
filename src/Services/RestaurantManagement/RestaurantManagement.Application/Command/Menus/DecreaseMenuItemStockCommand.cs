@@ -6,7 +6,7 @@ using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record DecreaseMenuItemStockCommand(Guid MenuId, Guid MenuItemId, uint Amount) : ICommand<Result>;
+public record DecreaseMenuItemStockCommand(Guid MenuItemId, uint Amount) : ICommand<Result>;
 
 public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuItemStockCommand, Result>
 {
@@ -42,7 +42,7 @@ public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuIt
     private async Task<Result> DecreaseMenuItemStock(
         DecreaseMenuItemStockCommand request, Guid ownerId, CancellationToken cancellationToken)
     {
-        var menu = await _menuRepository.GetByIdAsync(request.MenuId, ownerId, cancellationToken);
+        var menu = await _menuRepository.GetByOwnerIdAsync(ownerId, cancellationToken);
         if (menu is null)
             return new Error(CommonResource.App_MenuNotFound);
 

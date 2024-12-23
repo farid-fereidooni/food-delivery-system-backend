@@ -2,6 +2,7 @@ using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Exceptions;
 using RestaurantManagement.Domain.Resources;
+using RestaurantManagement.Domain.ValueObjects;
 
 namespace RestaurantManagement.Domain.Models.Command.MenuAggregate;
 
@@ -26,23 +27,23 @@ public class Menu : AggregateRoot, IConcurrentSafe
     public bool IsActive { get; private set; }
     public uint Version { get; set; }
 
-    public Result CanAddMenuItem(Guid categoryId, Guid foodId)
+    public Result CanAddMenuItem(Guid categoryId, FoodSpecification specification, ICollection<Guid> typeIds)
     {
         if (MenuItems.Count >= MaxMenuItemLength)
             return new Error(CommonResource.Validation_MaxMenuItemReached);
 
-        if (MenuItems.Any(x => x.CategoryId == categoryId && x.FoodId == foodId))
+        if (MenuItems.Any(x => x.CategoryId == categoryId && x.Specification.Name == specification.Name))
             return new Error(CommonResource.App_DuplicatedMenuItem);
 
         return Result.Success();
     }
 
-    public Guid AddMenuItem(Guid categoryId, Guid foodId)
+    public Guid AddMenuItem(Guid categoryId, FoodSpecification specification, ICollection<Guid> typeIds)
     {
-        var validation = CanAddMenuItem(categoryId, foodId);
+        var validation = CanAddMenuItem(categoryId, specification, typeIds);
         InvalidDomainStateException.ThrowIfError(validation);
 
-        var menuItem = new MenuItem(categoryId, foodId);
+        var menuItem = new MenuItem(categoryId, specification, typeIds);
         MenuItems.Add(menuItem);
         return menuItem.Id;
     }
@@ -94,6 +95,30 @@ public class Menu : AggregateRoot, IConcurrentSafe
     {
         var menuItem = GetMenuItem(menuItemId);
         menuItem.DecreaseStock(number);
+    }
+
+    public void UpdateMenuItemFoodSpecification(Guid menuItemId, FoodSpecification specification)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.UpdateFoodSpecification(specification);
+    }
+
+    public void SetMenuItemFoodTypes(Guid menuItemId, IEnumerable<Guid> foodTypeIds)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.SetFoodTypes(foodTypeIds);
+    }
+
+    public void AddMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.AddFoodTypes(foodTypeId);
+    }
+
+    public void RemoveMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.RemoveFoodTypes(foodTypeId);
     }
 
     private MenuItem GetMenuItem(Guid menuItemId)

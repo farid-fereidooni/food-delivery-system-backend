@@ -231,6 +231,7 @@ public interface IError
 {
     ErrorReason Reason { get; }
     IReadOnlyCollection<Message> Messages { get; }
+    IError CombineError(IError error);
 }
 
 public struct Error : IError
@@ -283,6 +284,11 @@ public struct Error : IError
         return this;
     }
 
+    IError IError.CombineError(IError error)
+    {
+        return CombineError(error);
+    }
+
     public Error CombineError(IError error)
     {
         _messages.AddRange(error.Messages);
@@ -307,20 +313,30 @@ public static class ResultExtensions
     public static Result And(
         this IResult<Error> result, Result finalResult)
     {
-        return result.IsSuccess ? finalResult : result.UnwrapError();
+        return result.IsSuccess ? finalResult : result.UnwrapError().CombineIfError(finalResult);
     }
 
     public static Result<TValue, TError> And<TValue, TError>(
         this IResult<TError> result, Result<TValue, TError> finalResult)
         where TError : IError
     {
-        return result.IsSuccess ? finalResult : result.UnwrapError();
+        if (result.IsSuccess)
+            return finalResult;
+
+        return finalResult.IsSuccess
+            ? result.UnwrapError()
+            : (TError)finalResult.UnwrapError().CombineError(result.UnwrapError());
     }
 
     public static Result<TValue> And<TValue>(
         this IResult<Error> result, Result<TValue> finalResult)
     {
-        return result.IsSuccess ? finalResult : result.UnwrapError();
+        return result.IsSuccess ? finalResult : result.UnwrapError().CombineIfError(finalResult);
+    }
+
+    private static Error CombineIfError(this in Error error, in IResult<Error> secondResult)
+    {
+        return secondResult.IsSuccess ? error : secondResult.UnwrapError().CombineError(error);
     }
 
     public static Result AndThen(this IResult<Error> result, Action finalAction)

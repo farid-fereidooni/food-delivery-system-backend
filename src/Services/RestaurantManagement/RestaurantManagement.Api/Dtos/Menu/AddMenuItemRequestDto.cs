@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using RestaurantManagement.Api.Utilities;
 using RestaurantManagement.Application.Command.Menus;
 using RestaurantManagement.Domain.Resources;
 
@@ -10,10 +11,18 @@ public record AddMenuItemRequestDto
     public Guid CategoryId { get; set; }
 
     [Required(ErrorMessage = nameof(CommonResource.Validation_FieldIsRequired))]
-    public Guid FoodId { get; set; }
+    public required string Name { get; set; }
 
-    public AddMenuItemCommand ToCommand(Guid menuId)
+    [Required(ErrorMessage = nameof(CommonResource.Validation_FieldIsRequired))]
+    [NonNegative(ErrorMessage = nameof(CommonResource.Validation_FieldShouldNotBeNegative))]
+    public decimal Price { get; set; }
+
+    public string? Description { get; set; }
+
+    public Guid[] FoodTypeIds { get; set; } = [];
+
+    public AddMenuItemCommand ToCommand()
     {
-        return new AddMenuItemCommand(menuId, CategoryId, FoodId);
+        return new AddMenuItemCommand(CategoryId, Name, Price, Description, FoodTypeIds);
     }
 }

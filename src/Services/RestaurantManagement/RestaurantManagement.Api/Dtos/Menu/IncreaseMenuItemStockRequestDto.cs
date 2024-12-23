@@ -9,8 +9,8 @@ public record IncreaseMenuItemStockRequestDto
     [Range(1, int.MaxValue, ErrorMessage = nameof(CommonResource.Validation_InvalidFieldValue))]
     public uint Amount { get; set; }
 
-    public IncreaseMenuItemStockCommand ToCommand(Guid menuId, Guid menuItemId)
+    public IncreaseMenuItemStockCommand ToCommand(Guid menuItemId)
     {
-        return new IncreaseMenuItemStockCommand(menuId, menuItemId, Amount);
+        return new IncreaseMenuItemStockCommand(menuItemId, Amount);
     }
 }

@@ -1,7 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Exceptions;
+using RestaurantManagement.Domain.Helpers;
 using RestaurantManagement.Domain.Resources;
+using RestaurantManagement.Domain.ValueObjects;
 
 namespace RestaurantManagement.Domain.Models.Command.MenuAggregate;
 
@@ -9,20 +12,24 @@ public class MenuItem : Entity, IConcurrentSafe
 {
     protected MenuItem()
     {
-
+        FoodTypeMenuItems = new HashSet<FoodTypeMenuItem>();
     }
 
-    public MenuItem(Guid categoryId, Guid foodId)
+    public MenuItem(Guid categoryId, FoodSpecification specification, IEnumerable<Guid> typeIds)
     {
         CategoryId = categoryId;
-        FoodId = foodId;
+        Specification = specification;
+        SetFoodTypes(typeIds);
         Stock = 0;
     }
 
     public Guid CategoryId { get; private set; }
 
     public Guid MenuId { get; private set; }
-    public Guid FoodId { get; private set; }
+
+    internal ICollection<FoodTypeMenuItem> FoodTypeMenuItems { get; set; }
+
+    public FoodSpecification Specification { get; private set; }
 
     public uint Stock { get; private set; }
     public uint Version { get; set; }
@@ -49,5 +56,30 @@ public class MenuItem : Entity, IConcurrentSafe
         var validation = CanDecreaseStock(number);
         InvalidDomainStateException.ThrowIfError(validation);
         Stock -= number;
+    }
+
+    public void UpdateFoodSpecification(FoodSpecification specification)
+    {
+        Specification = specification;
+    }
+
+    [MemberNotNull(nameof(FoodTypeMenuItems))]
+    public void SetFoodTypes(IEnumerable<Guid> foodTypeId)
+    {
+        var newItems = foodTypeId.Select(s => new FoodTypeMenuItem(s, Id)).ToHashSet();
+
+        FoodTypeMenuItems ??= new HashSet<FoodTypeMenuItem>();
+        FoodTypeMenuItems.RemoveRange(FoodTypeMenuItems.Except(newItems));
+        FoodTypeMenuItems.AddRange(newItems.Except(FoodTypeMenuItems));
+    }
+
+    public void AddFoodTypes(params Guid[] foodTypeId)
+    {
+        FoodTypeMenuItems.AddRange(foodTypeId.Select(s => new FoodTypeMenuItem(s, Id)));
+    }
+
+    public void RemoveFoodTypes(params Guid[] foodTypeId)
+    {
+        FoodTypeMenuItems.RemoveRange(foodTypeId.Select(s => new FoodTypeMenuItem(s, Id)));
     }
 }

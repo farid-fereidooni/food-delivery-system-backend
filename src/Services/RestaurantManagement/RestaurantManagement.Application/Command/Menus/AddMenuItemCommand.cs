@@ -3,10 +3,16 @@ using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
+using RestaurantManagement.Domain.ValueObjects;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record AddMenuItemCommand(Guid MenuId, Guid CategoryId, Guid FoodId) : ICommand<Result<EntityCreatedDto>>;
+public record AddMenuItemCommand(
+    Guid CategoryId,
+    string Name,
+    decimal Price,
+    string? Description,
+    Guid[] FoodTypeIds) : ICommand<Result<EntityCreatedDto>>;
 
 public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Result<EntityCreatedDto>>
 {
@@ -32,13 +38,16 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
             return currentUserResult.UnwrapError();
         var ownerId = currentUserResult.Unwrap();
 
-        var menu = await _menuRepository.GetByIdAsync(request.MenuId, ownerId, cancellationToken);
+        var menu = await _menuRepository.GetByOwnerIdAsync(ownerId, cancellationToken);
         if (menu is null)
             return new Error(CommonResource.App_MenuNotFound);
 
-        var itemResult = menu.CanAddMenuItem(request.CategoryId, request.FoodId)
-            .AndThen(() => menu.AddMenuItem(request.CategoryId, request.FoodId));
+        var specificationResult = FoodSpecification.TryCreate(request.Name, request.Price, request.Description);
+        if (specificationResult.IsFailure)
+            return specificationResult.UnwrapError();
 
+        var itemResult = menu.CanAddMenuItem(request.CategoryId, specificationResult.Unwrap(), request.FoodTypeIds)
+            .AndThen(() => menu.AddMenuItem(request.CategoryId, specificationResult.Unwrap(), request.FoodTypeIds));
         if (itemResult.IsFailure)
             return itemResult.UnwrapError();
 

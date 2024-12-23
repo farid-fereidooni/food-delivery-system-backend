@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Exceptions;
-using RestaurantManagement.Domain.Models.Command.FoodAggregate;
 using RestaurantManagement.Domain.Models.Command.FoodTypeAggregate;
 using RestaurantManagement.Domain.Models.Command.MenuAggregate;
 using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
@@ -21,7 +20,6 @@ public class CommandDbContext(DbContextOptions options, IMediator _mediator)
     public DbSet<Menu> Menus { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<MenuCategory> MenuCategories { get; set; }
-    public DbSet<Food> Foods { get; set; }
     public DbSet<FoodType> FoodTypes { get; set; }
     public DbSet<EventLog> EventLogs { get; set; }
 

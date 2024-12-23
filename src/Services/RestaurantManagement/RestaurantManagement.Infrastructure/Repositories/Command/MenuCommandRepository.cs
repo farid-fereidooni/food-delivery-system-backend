@@ -19,15 +19,16 @@ public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRe
         return await _dbContext.Menus
             .Where(m => m.Id == id)
             .Include(i => i.MenuItems)
+            .ThenInclude(i => i.FoodTypeMenuItems)
             .SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Menu?> GetByIdAsync(Guid menuId, Guid ownerId, CancellationToken cancellationToken = default)
+    public async Task<Menu?> GetByOwnerIdAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Menus
-            .Where(m => m.Id == menuId
-                && _dbContext.Restaurants.Any(r => r.Id == m.RestaurantId && r.OwnerId == ownerId))
+            .Where(m => _dbContext.Restaurants.Any(r => r.Id == m.RestaurantId && r.OwnerId == ownerId))
             .Include(i => i.MenuItems)
+            .ThenInclude(i => i.FoodTypeMenuItems)
             .SingleOrDefaultAsync(cancellationToken);
     }
 
@@ -35,10 +36,5 @@ public class MenuCommandRepository : BaseCommandRepository<Menu>, IMenuCommandRe
         Guid menuCategoryId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.MenuItems.AnyAsync(m => m.CategoryId == menuCategoryId, cancellationToken);
-    }
-
-    public async Task<bool> AnyMenuItemWithFoodAsync(Guid foodId, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.MenuItems.AnyAsync(m => m.FoodId == foodId, cancellationToken);
     }
 }

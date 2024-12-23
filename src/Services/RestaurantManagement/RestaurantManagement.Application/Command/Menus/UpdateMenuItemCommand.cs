@@ -3,10 +3,17 @@ using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
+using RestaurantManagement.Domain.ValueObjects;
 
 namespace RestaurantManagement.Application.Command.Menus;
 
-public record UpdateMenuItemCommand(Guid MenuId, Guid MenuItemId, Guid CategoryId) : ICommand<Result>;
+public record UpdateMenuItemCommand(
+    Guid MenuItemId,
+    Guid CategoryId,
+    string Name,
+    decimal Price,
+    string? Description,
+    Guid[] FoodTypeIds) : ICommand<Result>;
 
 public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemCommand, Result>
 {
@@ -31,15 +38,20 @@ public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemComman
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 
-        var menu = await _menuRepository.GetByIdAsync(request.MenuId, currentUserResult.Unwrap(), cancellationToken);
+        var menu = await _menuRepository.GetByOwnerIdAsync(currentUserResult.Unwrap(), cancellationToken);
         if (menu is null)
             return new Error(CommonResource.App_MenuNotFound);
 
         return await menu
             .CanChangeMenuItemCategory(request.MenuItemId, request.CategoryId)
+            .And(FoodSpecification.Validate(request.Name, request.Price, request.Description))
             .AndThenAsync(async () =>
             {
                 menu.ChangeMenuItemCategory(request.MenuItemId, request.CategoryId);
+                menu.UpdateMenuItemFoodSpecification(
+                    request.MenuItemId, new FoodSpecification(request.Name, request.Price, request.Description));
+                menu.SetMenuItemFoodTypes(request.MenuItemId, request.FoodTypeIds);
+
                 await _unitOfWork.SaveAsync(cancellationToken);
             });
     }
