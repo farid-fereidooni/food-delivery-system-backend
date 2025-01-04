@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 using RestaurantManagement.Domain.Contracts;
 using RestaurantManagement.Infrastructure.Database.Command;
 using RestaurantManagement.Infrastructure.Database.Query;
@@ -16,8 +17,21 @@ public static class InfrastructureServicesPipeline
 
         builder.Services.AddScoped<IUnitOfWork>(f => f.GetRequiredService<CommandDbContext>());
 
+        var mongoSettings = MongoClientSettings.FromConnectionString(
+            builder.Configuration.GetConnectionString("queryDatabase"));
+
+        if (builder.Environment.IsDevelopment())
+        {
+            var loggerFactory = LoggerFactory.Create(b =>
+            {
+                b.AddSimpleConsole();
+                b.SetMinimumLevel(LogLevel.Debug);
+            });
+            mongoSettings.LoggingSettings = new LoggingSettings(loggerFactory);
+        }
+
         builder.Services.AddSingleton<IMongoClient, MongoClient>(
-            _ => new MongoClient(builder.Configuration.GetConnectionString("queryDatabase")));
+            _ => new MongoClient(mongoSettings));
         builder.Services.AddSingleton<QueryDbContext>();
 
         builder.Services.Scan(scan => scan

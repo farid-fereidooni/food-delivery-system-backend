@@ -1,20 +1,20 @@
 using EventBus.Core;
 using MediatR;
 using Microsoft.Extensions.Options;
-using RestaurantManagement.Application.DenormalizationEvents.MenuCategories;
+using RestaurantManagement.Application.DenormalizationEvents.Menus;
 using RestaurantManagement.Domain.Contracts;
-using RestaurantManagement.Domain.DomainEvents.MenuCategories;
+using RestaurantManagement.Domain.DomainEvents.Menus;
 using RestaurantManagement.Domain.Dtos;
 
-namespace RestaurantManagement.Application.DomainEventHandlers.MenuCategories;
+namespace RestaurantManagement.Application.DomainEventHandlers.Menus;
 
-public class MenuCategoryCreatedEventsHandler : INotificationHandler<MenuCategoryCreatedEvent>
+public class MenuItemStockUpdatedEventHandler : INotificationHandler<MenuItemStockUpdatedEvent>
 {
     private readonly IEventLogService _eventLogService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly EventBusConfiguration _eventBusConfig;
 
-    public MenuCategoryCreatedEventsHandler(
+    public MenuItemStockUpdatedEventHandler(
         IEventLogService eventLogService,
         IUnitOfWork unitOfWork,
         IOptions<EventBusConfiguration> options)
@@ -24,17 +24,13 @@ public class MenuCategoryCreatedEventsHandler : INotificationHandler<MenuCategor
         _eventBusConfig = options.Value;
     }
 
-    public async Task Handle(MenuCategoryCreatedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(MenuItemStockUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        var menuCreatedDenormalizationEvent = new MenuCategoryCreatedDenormalizationEvent
-        {
-            Name = notification.Name,
-            OwnerId = notification.OwnerId,
-            MenuCategoryId = notification.Id
-        };
+        var @event = new MenuItemStockUpdatedDenormalizationEvent(
+            notification.Id, notification.MenuId, notification.RestaurantId, notification.Stock);
 
         await _eventLogService.AddEventAsync(
-            menuCreatedDenormalizationEvent,
+            @event,
             _eventBusConfig.DenormalizationBroker,
             _unitOfWork.CurrentTransactionId ?? throw new Exception("Transaction has not been started"),
             cancellationToken);

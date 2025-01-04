@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using RestaurantManagement.Domain.Contracts.Query;
-using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
 using RestaurantManagement.Domain.Models.Query;
 using RestaurantManagement.Infrastructure.Database.Query;
 

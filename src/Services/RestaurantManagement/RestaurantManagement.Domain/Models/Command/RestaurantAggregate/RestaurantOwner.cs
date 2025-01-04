@@ -1,5 +1,5 @@
 using RestaurantManagement.Domain.Contracts;
-using RestaurantManagement.Domain.DomainEvents;
+using RestaurantManagement.Domain.DomainEvents.Restaurants;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Exceptions;
 using RestaurantManagement.Domain.Resources;
@@ -17,6 +17,7 @@ public class RestaurantOwner : AggregateRoot
     public RestaurantOwner(Guid ownerId)
     {
         Id = ownerId;
+        AddDomainEvent(new RestaurantOwnerCreatedEvent(Id));
     }
 
     protected internal EntityCollection<Restaurant> Restaurants { get; } = new();
@@ -42,7 +43,15 @@ public class RestaurantOwner : AggregateRoot
         var restaurant = new Restaurant(name, address, Id);
         Restaurants.Add(restaurant);
 
-        AddDomainEvent(new RestaurantCreatedEvent(restaurant.Id));
+        AddDomainEvent(new RestaurantCreatedEvent(
+            restaurant.Id,
+            restaurant.OwnerId,
+            restaurant.Status,
+            restaurant.Name,
+            restaurant.Address.Street,
+            restaurant.Address.City,
+            restaurant.Address.State,
+            restaurant.Address.ZipCode));
         return restaurant.Id;
     }
 
@@ -50,18 +59,28 @@ public class RestaurantOwner : AggregateRoot
     {
         var restaurant = GetRestaurant(restaurantId);
         restaurant.UpdateInfo(newName, newAddress);
+
+        AddDomainEvent(new RestaurantUpdatedEvent(
+            restaurant.Id,
+            restaurant.Name,
+            restaurant.Address.Street,
+            restaurant.Address.City,
+            restaurant.Address.State,
+            restaurant.Address.ZipCode));
     }
 
     public void ActivateRestaurant(Guid restaurantId)
     {
         var restaurant = GetRestaurant(restaurantId);
         restaurant.Activate();
+        AddDomainEvent(new RestaurantActivatedEvent(restaurant.Id));
     }
 
     public void DeactivateRestaurant(Guid restaurantId)
     {
         var restaurant = GetRestaurant(restaurantId);
         restaurant.Deactivate();
+        AddDomainEvent(new RestaurantDeactivatedEvent(restaurant.Id));
     }
 
     private Restaurant GetRestaurant(Guid restaurantId)

@@ -63,8 +63,10 @@ internal class RabbitMqRegistrationHandlerBuilder<TEvent>
     {
         var key = typeof(TEvent).Name;
 
-        _serviceCollection.AddScoped<IEventHandler<TEvent>, TEventHandler>();
-        _serviceCollection.AddKeyedScoped<IEventHandlerProxy, EventHandlerProxy<TEvent>>(key);
+        _serviceCollection.AddScoped<TEventHandler>();
+        _serviceCollection.AddKeyedScoped<IEventHandlerProxy, EventHandlerProxy<TEvent>>(
+            key,
+            (c, _) => new EventHandlerProxy<TEvent>(c.GetRequiredService<TEventHandler>()));
 
         return this;
     }

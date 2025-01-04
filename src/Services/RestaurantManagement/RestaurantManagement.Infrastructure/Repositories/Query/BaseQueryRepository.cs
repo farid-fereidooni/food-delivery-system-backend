@@ -34,6 +34,16 @@ public abstract class BaseQueryRepository<T> : IQueryRepository<T> where T : Sto
         await _collection.ReplaceOneAsync(c => c.Id == entity.Id, entity, cancellationToken: cancellationToken);
     }
 
+    public async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    {
+        foreach (var items in entities.Chunk(10))
+        {
+            await _collection.BulkWriteAsync(items.Select(
+                item => new ReplaceOneModel<T>(Builders<T>.Filter.Where(w => w.Id == item.Id), item)),
+                cancellationToken: cancellationToken);
+        }
+    }
+
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await _collection.DeleteOneAsync(x => x.Id == id, cancellationToken: cancellationToken);

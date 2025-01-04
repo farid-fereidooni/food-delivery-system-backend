@@ -1,4 +1,5 @@
 using RestaurantManagement.Domain.Contracts;
+using RestaurantManagement.Domain.DomainEvents.Menus;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Exceptions;
 using RestaurantManagement.Domain.Resources;
@@ -18,6 +19,8 @@ public class Menu : AggregateRoot, IConcurrentSafe
     {
         RestaurantId = restaurantId;
         IsActive = true;
+
+        AddDomainEvent(new MenuCreatedEvent(Id, restaurantId));
     }
 
     public Guid RestaurantId { get; private set; }
@@ -45,7 +48,61 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
         var menuItem = new MenuItem(categoryId, specification, typeIds);
         MenuItems.Add(menuItem);
+
+        AddDomainEvent(
+            new MenuItemAddedEvent(
+                menuItem.Id,
+                Id,
+                RestaurantId,
+                menuItem.CategoryId,
+                menuItem.Specification.Name,
+                menuItem.Specification.Price,
+                menuItem.Specification.Description,
+                menuItem.Stock,
+                typeIds));
         return menuItem.Id;
+    }
+
+    public void UpdateMenuItemFoodSpecification(Guid menuItemId, FoodSpecification specification)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.UpdateFoodSpecification(specification);
+
+        AddDomainEvent(
+            new MenuItemUpdatedEvent(
+                menuItemId,
+                Id,
+                RestaurantId,
+                menuItem.Specification.Name,
+                menuItem.Specification.Price,
+                menuItem.Specification.Description));
+    }
+
+    public void SetMenuItemFoodTypes(Guid menuItemId, IEnumerable<Guid> foodTypeIds)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.SetFoodTypes(foodTypeIds);
+
+        AddDomainEvent(new MenuItemFoodTypesUpdatedEvent(
+            menuItemId,Id, RestaurantId, menuItem.FoodTypes.ToList()));
+    }
+
+    public void AddMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.AddFoodTypes(foodTypeId);
+
+        AddDomainEvent(new MenuItemFoodTypesUpdatedEvent(
+            menuItemId, Id, RestaurantId, menuItem.FoodTypes.ToList()));
+    }
+
+    public void RemoveMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
+    {
+        var menuItem = GetMenuItem(menuItemId);
+        menuItem.RemoveFoodTypes(foodTypeId);
+
+        AddDomainEvent(new MenuItemFoodTypesUpdatedEvent(menuItemId,
+            Id, RestaurantId, menuItem.FoodTypes.ToList()));
     }
 
     public Result CanChangeMenuItemCategory(Guid menuItemId, Guid newCategoryId)
@@ -62,11 +119,15 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
         var menuItem = GetMenuItem(menuItemId);
         menuItem.ChangeCategory(newCategoryId);
+
+        AddDomainEvent(new MenuItemCategoryUpdatedEvent(menuItemId, Id, RestaurantId, newCategoryId));
     }
 
     public void RemoveMenuItem(Guid menuItemId)
     {
         MenuItems.RemoveById(menuItemId);
+
+        AddDomainEvent(new MenuItemRemovedEvent(menuItemId, Id, RestaurantId));
     }
 
     public Result CanAddStock(Guid menuItemId, uint number)
@@ -83,6 +144,8 @@ public class Menu : AggregateRoot, IConcurrentSafe
 
         var menuItem = GetMenuItem(menuItemId);
         menuItem.AddStock(amount);
+
+        AddDomainEvent(new MenuItemStockUpdatedEvent(menuItemId, Id, RestaurantId, amount));
     }
 
     public Result CanDecreaseStock(Guid menuItemId, uint number)
@@ -91,34 +154,12 @@ public class Menu : AggregateRoot, IConcurrentSafe
         return menuItem.CanDecreaseStock(number);
     }
 
-    public void DecreaseStock(Guid menuItemId, uint number)
+    public void DecreaseStock(Guid menuItemId, uint amount)
     {
         var menuItem = GetMenuItem(menuItemId);
-        menuItem.DecreaseStock(number);
-    }
+        menuItem.DecreaseStock(amount);
 
-    public void UpdateMenuItemFoodSpecification(Guid menuItemId, FoodSpecification specification)
-    {
-        var menuItem = GetMenuItem(menuItemId);
-        menuItem.UpdateFoodSpecification(specification);
-    }
-
-    public void SetMenuItemFoodTypes(Guid menuItemId, IEnumerable<Guid> foodTypeIds)
-    {
-        var menuItem = GetMenuItem(menuItemId);
-        menuItem.SetFoodTypes(foodTypeIds);
-    }
-
-    public void AddMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
-    {
-        var menuItem = GetMenuItem(menuItemId);
-        menuItem.AddFoodTypes(foodTypeId);
-    }
-
-    public void RemoveMenuItemFoodTypes(Guid menuItemId, params Guid[] foodTypeId)
-    {
-        var menuItem = GetMenuItem(menuItemId);
-        menuItem.RemoveFoodTypes(foodTypeId);
+        AddDomainEvent(new MenuItemStockUpdatedEvent(menuItemId, Id, RestaurantId, amount));
     }
 
     private MenuItem GetMenuItem(Guid menuItemId)

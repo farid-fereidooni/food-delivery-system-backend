@@ -139,12 +139,14 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
             await Task.WhenAll(handlers.Select(handler => handler.HandleAsync(@event, eventArgs.CancellationToken)));
             await TryAck(consumerChannel, eventArgs.DeliveryTag, eventArgs.CancellationToken);
         }
-        catch (EventIgnoredException)
+        catch (EventIgnoredException ex)
         {
+            _logger.LogWarning(ex, "Event {eventName} was ignored", eventName);
             await consumerChannel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: true);
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Event {eventName} was not handled. Event nacked.", eventName);
             await consumerChannel.BasicNackAsync(eventArgs.DeliveryTag, multiple: false, requeue: false);
         }
     }
@@ -184,7 +186,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
 
     private string NameOfEvent<TEvent>(TEvent @event) where TEvent : Event
     {
-        return @event.GetType().Name;
+        return @event.EventName;
     }
 
     private AsyncPolicy ConnectPolicy() =>

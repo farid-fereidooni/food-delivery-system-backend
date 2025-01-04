@@ -15,7 +15,7 @@ public class EventLog
     public EventLog(Event @event, string topic, Guid transactionId)
     {
         EventId = @event.EventId;
-        EventName = @event.GetType().Name;
+        EventName = @event.EventName;
         EventDate = @event.EventCreatedAt;
         TransactionId = transactionId;
         TimesSent = 0;

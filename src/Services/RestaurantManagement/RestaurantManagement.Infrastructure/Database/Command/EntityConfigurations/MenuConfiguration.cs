@@ -27,6 +27,8 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
             .WithMany()
             .HasForeignKey(x => x.CategoryId);
 
+        builder.Ignore(m => m.FoodTypes);
+
         builder.ComplexProperty(c => c.Specification);
 
         builder.HasMany<FoodType>()

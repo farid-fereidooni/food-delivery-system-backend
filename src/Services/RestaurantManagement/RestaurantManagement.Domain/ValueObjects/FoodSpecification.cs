@@ -16,9 +16,9 @@ public record struct FoodSpecification : IValueObject
         Description = description?.Trim();
     }
 
-    public string? Description { get; private set; }
-    public decimal Price { get; private set; }
     public string Name { get; private set; }
+    public decimal Price { get; private set; }
+    public string? Description { get; private set; }
 
     public static Result Validate(string name, decimal price, string? description = null)
     {

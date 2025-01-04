@@ -28,6 +28,7 @@ public class MenuItem : Entity, IConcurrentSafe
     public Guid MenuId { get; private set; }
 
     internal ICollection<FoodTypeMenuItem> FoodTypeMenuItems { get; set; }
+    public IEnumerable<Guid> FoodTypes => FoodTypeMenuItems.Select(x => x.FoodTypeId);
 
     public FoodSpecification Specification { get; private set; }
 
