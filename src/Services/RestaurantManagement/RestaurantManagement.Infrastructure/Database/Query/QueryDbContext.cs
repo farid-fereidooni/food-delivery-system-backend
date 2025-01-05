@@ -10,19 +10,18 @@ namespace RestaurantManagement.Infrastructure.Database.Query;
 
 public class QueryDbContext
 {
-    private readonly IMongoClient _mongoClient;
-    private const string DatabaseName = "RestaurantManagement";
+    private readonly IMongoDatabase _mongoDatabase;
     private Dictionary<Type, string> CollectionNames { get; } = new();
 
-    public QueryDbContext(IMongoClient mongoClient)
+    public QueryDbContext(IMongoDatabase mongoDatabase)
     {
-        _mongoClient = mongoClient;
+        _mongoDatabase = mongoDatabase;
         Configure();
     }
 
     public IMongoCollection<T> GetCollection<T>() where T : StorableRoot
     {
-        return _mongoClient.GetDatabase(DatabaseName).GetCollection<T>(GetCollectionName<T>());
+        return _mongoDatabase.GetCollection<T>(GetCollectionName<T>());
     }
 
     private string GetCollectionName<T>()

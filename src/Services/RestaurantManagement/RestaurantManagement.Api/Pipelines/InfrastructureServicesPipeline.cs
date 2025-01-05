@@ -9,6 +9,7 @@ namespace RestaurantManagement.Api.Pipelines;
 
 public static class InfrastructureServicesPipeline
 {
+    private const string MongoDatabaseName = "RestaurantManagement";
     public static WebApplicationBuilder AddInfrastructureServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<CommandDbContext>(dbBuilder => dbBuilder
@@ -30,9 +31,11 @@ public static class InfrastructureServicesPipeline
             mongoSettings.LoggingSettings = new LoggingSettings(loggerFactory);
         }
 
-        builder.Services.AddSingleton<IMongoClient, MongoClient>(
-            _ => new MongoClient(mongoSettings));
+        builder.Services.AddSingleton<IMongoDatabase>(
+            _ => new MongoClient(mongoSettings).GetDatabase(MongoDatabaseName));
         builder.Services.AddSingleton<QueryDbContext>();
+
+        builder.Services.AddTransient<IMigrationRunner, MigrationRunner>();
 
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<CommandDbContext>()
@@ -41,7 +44,10 @@ public static class InfrastructureServicesPipeline
                 .WithScopedLifetime()
             .AddClasses(classes => classes.Where(w => w.Name.EndsWith("Service")))
                 .AsMatchingInterface()
-                .WithScopedLifetime());
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo<IQueryMigration>())
+                .As<IQueryMigration>()
+                .WithTransientLifetime());
 
         builder.Services.AddHttpContextAccessor();
         return builder;
