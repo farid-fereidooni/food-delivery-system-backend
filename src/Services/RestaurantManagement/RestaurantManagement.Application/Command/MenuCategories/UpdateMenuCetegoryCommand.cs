@@ -27,7 +27,7 @@ public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCatego
     public async Task<Result> Handle(
         UpdateMenuCategoryCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = _authService.CurrentUserId();
+        var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

@@ -33,7 +33,7 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
     public async Task<Result<EntityCreatedDto>> Handle(
         AddMenuItemCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = _authService.CurrentUserId();
+        var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
         var ownerId = currentUserResult.Unwrap();

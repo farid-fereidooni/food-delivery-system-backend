@@ -15,6 +15,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.AddCustomOpenIdServer();
 builder.AddEventBus();
+builder.AddDomainServices();
 builder.AddApplicationServices();
 builder.AddCustomControllers();
 

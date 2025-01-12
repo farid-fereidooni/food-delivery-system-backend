@@ -11,8 +11,6 @@ public interface IResult<out TError>: IResult where TError : IError
     bool IsFailure { get; }
     TError UnwrapError();
     TResponse Match<TResponse>(Func<TResponse> onSuccess, Func<TError, TResponse> onFailure);
-    ValueTask<TResponse> MatchAsync<TResponse>(
-        Func<Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure);
 }
 public struct Result : IResult<Error>
 {
@@ -41,9 +39,9 @@ public struct Result : IResult<Error>
         return _error.Value;
     }
 
-
     public static Result Success() => new Result();
     public static Result Error(Error error) => new Result { _error = error };
+    public static Result Error() => new Result { _error = Dtos.Error.Empty() };
 
     public static implicit operator Result(Error error) => new Result { _error = error };
 
@@ -51,16 +49,12 @@ public struct Result : IResult<Error>
     {
         return new Error();
     }
-
 }
 
 public interface IResult<TValue, out TError> : IResult<TError>
     where TError : IError
 {
     TResponse Match<TResponse>(Func<TValue, TResponse> onSuccess, Func<TError, TResponse> onFailure);
-    ValueTask<TResponse> MatchAsync<TResponse>(
-        Func<TValue, Task<TResponse>> onSuccess, Func<TError, Task<TResponse>> onFailure);
-
     TValue Unwrap();
     TValue UnwrapOr(TValue value);
     TValue Expect(string exceptionMessage);
@@ -161,17 +155,6 @@ public struct Result<T> : IResult<T, Error>
         return _result.Match(onSuccess, onFailure);
     }
 
-    public async ValueTask<TResponse> MatchAsync<TResponse>(Func<Task<TResponse>> onSuccess, Func<Error, Task<TResponse>> onFailure)
-    {
-        return await _result.Match(onSuccess, onFailure);
-    }
-
-    public async ValueTask<TResponse> MatchAsync<TResponse>(
-        Func<T, Task<TResponse>> onSuccess, Func<Error, Task<TResponse>> onFailure)
-    {
-        return await _result.Match(onSuccess, onFailure);
-    }
-
     public T Unwrap()
     {
         return _result.Unwrap();
@@ -238,6 +221,7 @@ public struct Error : IError
 {
     public Error()
     {
+        Reason = ErrorReason.General;
     }
 
     public Error(ErrorReason reason)
@@ -262,6 +246,8 @@ public struct Error : IError
 
     private readonly List<Message> _messages = new(1);
     public IReadOnlyCollection<Message> Messages => _messages.AsReadOnly();
+
+    public static Error Empty() => new();
 
     public Error WithReason(ErrorReason reason)
     {

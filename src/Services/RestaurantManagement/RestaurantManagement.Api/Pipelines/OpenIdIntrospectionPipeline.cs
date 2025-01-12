@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using OpenIddict.Validation.AspNetCore;
+using RestaurantManagement.Api.Helpers;
+using RestaurantManagement.Domain.Contracts;
+using RestaurantManagement.Domain.DomainServices;
 using RestaurantManagement.Domain.Dtos;
 
 namespace RestaurantManagement.Api.Pipelines;
@@ -25,7 +29,44 @@ public static class OpenIdIntrospectionPipeline
             });
 
         builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
-        builder.Services.AddAuthorization();
+
+        builder.Services.AddSingleton<IAuthorizationHandler, RestaurantOwnerRequirementHandler>();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(
+                Constants.RestaurantOwnerPolicy,
+                config => config.AddRequirements(new RestaurantOwnerRequirement()));
+
         return builder;
+    }
+}
+
+public class RestaurantOwnerRequirement : IAuthorizationRequirement;
+
+public class RestaurantOwnerRequirementHandler : AuthorizationHandler<RestaurantOwnerRequirement>
+{
+    private readonly IRestaurantOwnerService _service;
+    private readonly IAuthService _authService;
+
+    public RestaurantOwnerRequirementHandler(IRestaurantOwnerService service, IAuthService authService)
+    {
+        _service = service;
+        _authService = authService;
+    }
+
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RestaurantOwnerRequirement requirement)
+    {
+        var result = await _authService
+            .GetCurrentUserId()
+            .Match(
+                id => _service.IsRestaurantOwner(id),
+                error => Task.FromResult(false));
+
+        if (result)
+        {
+            context.Succeed(requirement);
+            return;
+        }
+
+        context.Fail();
     }
 }

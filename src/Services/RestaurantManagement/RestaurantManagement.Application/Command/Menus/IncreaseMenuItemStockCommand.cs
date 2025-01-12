@@ -29,7 +29,7 @@ public class IncreaseMenuItemStockCommandHandler: IRequestHandler<IncreaseMenuIt
 
     public async Task<Result> Handle(IncreaseMenuItemStockCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = _authService.CurrentUserId();
+        var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
         var ownerId = currentUserResult.Unwrap();

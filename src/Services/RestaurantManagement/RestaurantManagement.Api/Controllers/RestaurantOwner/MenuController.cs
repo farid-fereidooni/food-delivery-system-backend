@@ -8,8 +8,8 @@ using RestaurantManagement.Application.Command.Menus;
 namespace RestaurantManagement.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/restaurant-owner/[controller]")]
+[RestaurantOwnerAuthorize]
 public class MenuController : Controller
 {
     private readonly IMediator _mediator;

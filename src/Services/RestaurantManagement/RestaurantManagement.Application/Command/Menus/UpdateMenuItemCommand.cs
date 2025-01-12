@@ -34,7 +34,7 @@ public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemComman
     public async Task<Result> Handle(
         UpdateMenuItemCommand request, CancellationToken cancellationToken)
     {
-        var currentUserResult = _authService.CurrentUserId();
+        var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
             return currentUserResult.UnwrapError();
 

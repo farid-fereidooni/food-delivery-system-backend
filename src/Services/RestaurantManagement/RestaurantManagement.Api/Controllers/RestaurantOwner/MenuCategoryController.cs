@@ -1,7 +1,5 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Api.Dtos.Menu;
 using RestaurantManagement.Api.Dtos.MenuCategory;
 using RestaurantManagement.Api.Helpers;
 using RestaurantManagement.Application.Command.MenuCategories;
@@ -9,8 +7,8 @@ using RestaurantManagement.Application.Command.MenuCategories;
 namespace RestaurantManagement.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/restaurant-owner/[controller]")]
+[RestaurantOwnerAuthorize]
 public class MenuCategoryController : Controller
 {
     private readonly IMediator _mediator;

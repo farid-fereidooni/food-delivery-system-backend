@@ -18,7 +18,7 @@ public class AuthService : IAuthService
         return _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
     }
 
-    public Result<Guid> CurrentUserId()
+    public Result<Guid> GetCurrentUserId()
     {
         var subClaim = GetSubClaim();
         if (subClaim == null)

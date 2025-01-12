@@ -5,5 +5,5 @@ namespace RestaurantManagement.Domain.Contracts;
 public interface IAuthService
 {
     bool IsAuthenticated();
-    Result<Guid> CurrentUserId();
+    Result<Guid> GetCurrentUserId();
 }
