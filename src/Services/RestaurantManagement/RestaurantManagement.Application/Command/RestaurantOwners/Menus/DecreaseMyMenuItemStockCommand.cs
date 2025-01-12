@@ -4,18 +4,18 @@ using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.Menus;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Menus;
 
-public record DecreaseMenuItemStockCommand(Guid MenuItemId, uint Amount) : ICommand<Result>;
+public record DecreaseMyMenuItemStockCommand(Guid MenuItemId, uint Amount) : ICommand<Result>;
 
-public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuItemStockCommand, Result>
+public class DecreaseMyMenuItemStockCommandHandler : IRequestHandler<DecreaseMyMenuItemStockCommand, Result>
 {
     private readonly IMenuCommandRepository _menuRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthService _authService;
     private readonly IConcurrencyHandler _concurrencyHandler;
 
-    public DecreaseMenuItemStockCommandHandler(
+    public DecreaseMyMenuItemStockCommandHandler(
         IMenuCommandRepository menuRepository,
         IUnitOfWork unitOfWork,
         IAuthService authService,
@@ -27,7 +27,7 @@ public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuIt
         _concurrencyHandler = concurrencyHandler;
     }
 
-    public async Task<Result> Handle(DecreaseMenuItemStockCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DecreaseMyMenuItemStockCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
@@ -40,7 +40,7 @@ public class DecreaseMenuItemStockCommandHandler: IRequestHandler<DecreaseMenuIt
     }
 
     private async Task<Result> DecreaseMenuItemStock(
-        DecreaseMenuItemStockCommand request, Guid ownerId, CancellationToken cancellationToken)
+        DecreaseMyMenuItemStockCommand request, Guid ownerId, CancellationToken cancellationToken)
     {
         var menu = await _menuRepository.GetByOwnerIdAsync(ownerId, cancellationToken);
         if (menu is null)

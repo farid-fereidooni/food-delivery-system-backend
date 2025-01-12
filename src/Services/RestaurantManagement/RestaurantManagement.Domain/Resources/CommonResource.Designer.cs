@@ -28,7 +28,7 @@ namespace RestaurantManagement.Domain.Resources {
         public static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("RestaurantManagement.Core.Resources.CommonResource", typeof(CommonResource).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("RestaurantManagement.Domain.Resources.CommonResource", typeof(CommonResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -174,6 +174,12 @@ namespace RestaurantManagement.Domain.Resources {
         public static string App_MenuItemNotFound {
             get {
                 return ResourceManager.GetString("App_MenuItemNotFound", resourceCulture);
+            }
+        }
+        
+        public static string App_RestaurantNotFound {
+            get {
+                return ResourceManager.GetString("App_RestaurantNotFound", resourceCulture);
             }
         }
     }

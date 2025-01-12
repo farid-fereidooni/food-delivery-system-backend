@@ -5,9 +5,9 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 using RestaurantManagement.Domain.ValueObjects;
 
-namespace RestaurantManagement.Application.Command.Restaurants;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Restaurants;
 
-public record UpdateRestaurantCommand(
+public record UpdateMyRestaurantCommand(
     Guid Id,
     string Name,
     string Street,
@@ -15,13 +15,13 @@ public record UpdateRestaurantCommand(
     string State,
     string ZipCode) : ICommand<Result>;
 
-public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCommand, Result>
+public class UpdateMyRestaurantCommandHandler : IRequestHandler<UpdateMyRestaurantCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRestaurantOwnerCommandRepository _ownerRepository;
     private readonly IAuthService _authService;
 
-    public UpdateRestaurantCommandHandler(
+    public UpdateMyRestaurantCommandHandler(
         IUnitOfWork unitOfWork,
         IRestaurantOwnerCommandRepository ownerRepository,
         IAuthService authService)
@@ -31,8 +31,7 @@ public class UpdateRestaurantCommandHandler : IRequestHandler<UpdateRestaurantCo
         _authService = authService;
     }
 
-    public async Task<Result> Handle(
-        UpdateRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateMyRestaurantCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

@@ -5,17 +5,17 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Models.Command.MenuCategoryAggregate;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.MenuCategories;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.MenuCategories;
 
-public record CreateMenuCategoryCommand(string Name) : ICommand<Result<EntityCreatedDto>>;
+public record CreateMyMenuCategoryCommand(string Name) : ICommand<Result<EntityCreatedDto>>;
 
-public class CreateMenuCategoryCommandHandler : IRequestHandler<CreateMenuCategoryCommand, Result<EntityCreatedDto>>
+public class CreateMyMenuCategoryCommandHandler : IRequestHandler<CreateMyMenuCategoryCommand, Result<EntityCreatedDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCategoryCommandRepository _categoryRepository;
     private readonly IAuthService _authService;
 
-    public CreateMenuCategoryCommandHandler(
+    public CreateMyMenuCategoryCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCategoryCommandRepository categoryRepository,
         IAuthService authService)
@@ -26,7 +26,7 @@ public class CreateMenuCategoryCommandHandler : IRequestHandler<CreateMenuCatego
     }
 
     public async Task<Result<EntityCreatedDto>> Handle(
-        CreateMenuCategoryCommand request, CancellationToken cancellationToken)
+        CreateMyMenuCategoryCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

@@ -2,9 +2,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Application.Command.RestaurantOwners;
+using RestaurantManagement.Application.Command.Public.RestaurantOwners;
+using RestaurantManagement.Application.Query.Public;
+using RestaurantManagement.Domain.Dtos;
 
-namespace RestaurantManagement.Api.Controllers;
+namespace RestaurantManagement.Api.Controllers.Public;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,6 +18,13 @@ public class RestaurantOwnerController : Controller
     public RestaurantOwnerController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("is-users-restaurant-owner")]
+    public async Task<IActionResult> IsUserRestaurantOwner(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new IsUserRestaurantOwnerQuery(), cancellationToken);
+        return Result.Success(result).ToApiResponse();
     }
 
     [HttpPost]

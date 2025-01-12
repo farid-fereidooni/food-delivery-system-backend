@@ -40,6 +40,7 @@ public struct Result : IResult<Error>
     }
 
     public static Result Success() => new Result();
+    public static Result<TValue, Error> Success<TValue>(TValue value) => Result<TValue, Error>.Success(value);
     public static Result Error(Error error) => new Result { _error = error };
     public static Result Error() => new Result { _error = Dtos.Error.Empty() };
 
@@ -134,6 +135,8 @@ public struct Result<TValue, TError> : IResult<TValue, TError>
             ? _value
             : _error;
     }
+
+    public static Result<TValue, TError> Success(TValue value) => new() { _value = value, IsSuccess = true };
 
     public static implicit operator Result<TValue, TError>(TError error) => new() { _error = error };
     public static implicit operator Result<TValue, TError>(TValue value) => new() { _value = value, IsSuccess = true };

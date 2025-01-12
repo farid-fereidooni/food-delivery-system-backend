@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using RestaurantManagement.Api.Utilities;
-using RestaurantManagement.Application.Command.Menus;
+using RestaurantManagement.Application.Command.RestaurantOwners.Menus;
 using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Dtos.Menu;
@@ -21,8 +21,8 @@ public record AddMenuItemRequestDto
 
     public Guid[] FoodTypeIds { get; set; } = [];
 
-    public AddMenuItemCommand ToCommand()
+    public AddMyMenuItemCommand ToCommand()
     {
-        return new AddMenuItemCommand(CategoryId, Name, Price, Description, FoodTypeIds);
+        return new AddMyMenuItemCommand(CategoryId, Name, Price, Description, FoodTypeIds);
     }
 }

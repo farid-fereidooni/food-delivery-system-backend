@@ -84,4 +84,7 @@
     <data name="App_MenuItemNotFound" xml:space="preserve">
         <value>Menu item not found</value>
     </data>
+    <data name="App_RestaurantNotFound" xml:space="preserve">
+        <value>Restaurant not found.</value>
+    </data>
 </root>

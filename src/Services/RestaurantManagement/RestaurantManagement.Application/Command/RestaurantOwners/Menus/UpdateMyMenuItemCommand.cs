@@ -5,9 +5,9 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 using RestaurantManagement.Domain.ValueObjects;
 
-namespace RestaurantManagement.Application.Command.Menus;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Menus;
 
-public record UpdateMenuItemCommand(
+public record UpdateMyMenuItemCommand(
     Guid MenuItemId,
     Guid CategoryId,
     string Name,
@@ -15,13 +15,13 @@ public record UpdateMenuItemCommand(
     string? Description,
     Guid[] FoodTypeIds) : ICommand<Result>;
 
-public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemCommand, Result>
+public class UpdateMyMenuItemCommandHandler : IRequestHandler<UpdateMyMenuItemCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCommandRepository _menuRepository;
     private readonly IAuthService _authService;
 
-    public UpdateMenuItemCommandHandler(
+    public UpdateMyMenuItemCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCommandRepository menuRepository,
         IAuthService authService)
@@ -31,8 +31,7 @@ public class UpdateMenuItemCommandHandler : IRequestHandler<UpdateMenuItemComman
         _authService = authService;
     }
 
-    public async Task<Result> Handle(
-        UpdateMenuItemCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateMyMenuItemCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

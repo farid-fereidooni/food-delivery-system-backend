@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using RestaurantManagement.Api.Filters;
 using RestaurantManagement.Domain.Resources;
@@ -16,6 +17,12 @@ public static class ControllerPipeline
                 options.Filters.Add<ModelStateFilter>();
                 options.Conventions.Add(new PluralizeRouteModelConvention());
             })
+            .AddJsonOptions(
+                options =>
+                {
+                    var enumConverter = new JsonStringEnumConverter();
+                    options.JsonSerializerOptions.Converters.Add(enumConverter);
+                })
             .AddDataAnnotationsLocalization(options =>
             {
                 options.DataAnnotationLocalizerProvider = (type, factory) =>

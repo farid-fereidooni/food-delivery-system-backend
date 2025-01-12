@@ -1,11 +1,11 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Dtos.Menu;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Application.Command.Menus;
+using RestaurantManagement.Application.Command.RestaurantOwners.Menus;
+using RestaurantManagement.Application.Query.RestaurantOwners.Menus;
 
-namespace RestaurantManagement.Api.Controllers;
+namespace RestaurantManagement.Api.Controllers.RestaurantOwner;
 
 [ApiController]
 [Route("api/restaurant-owner/[controller]")]
@@ -17,6 +17,20 @@ public class MenuController : Controller
     public MenuController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("current/menu-items")]
+    public async Task<IActionResult> GetMenus(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetMyMenuItemsQuery(), cancellationToken);
+        return result.ToApiResponse();
+    }
+
+    [HttpGet("current/menu-items/{id:guid}")]
+    public async Task<IActionResult> GetMenu(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetMyMenuItemQuery(id), cancellationToken);
+        return result.ToApiResponse();
     }
 
     [HttpPost("current/menu-items")]
@@ -63,7 +77,7 @@ public class MenuController : Controller
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeleteMenuItemCommand(id), cancellationToken);
+        var result = await _mediator.Send(new DeleteMyMenuItemCommand(id), cancellationToken);
         return result.ToApiResponse();
     }
 

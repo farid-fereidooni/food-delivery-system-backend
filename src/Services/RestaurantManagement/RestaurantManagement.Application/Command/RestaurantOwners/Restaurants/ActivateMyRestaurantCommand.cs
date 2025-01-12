@@ -4,17 +4,17 @@ using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.Restaurants;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Restaurants;
 
-public record DeactivateRestaurantCommand(Guid Id) : ICommand<Result>;
+public record ActivateMyRestaurantCommand(Guid Id) : ICommand<Result>;
 
-public class DeactivateRestaurantCommandHandler : IRequestHandler<DeactivateRestaurantCommand, Result>
+public class ActivateMyRestaurantCommandHandler : IRequestHandler<ActivateMyRestaurantCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRestaurantOwnerCommandRepository _ownerRepository;
     private readonly IAuthService _authService;
 
-    public DeactivateRestaurantCommandHandler(
+    public ActivateMyRestaurantCommandHandler(
         IUnitOfWork unitOfWork,
         IRestaurantOwnerCommandRepository ownerRepository,
         IAuthService authService)
@@ -24,8 +24,7 @@ public class DeactivateRestaurantCommandHandler : IRequestHandler<DeactivateRest
         _authService = authService;
     }
 
-    public async Task<Result> Handle(
-        DeactivateRestaurantCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ActivateMyRestaurantCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
@@ -35,7 +34,7 @@ public class DeactivateRestaurantCommandHandler : IRequestHandler<DeactivateRest
         if (owner is null)
             return new Error(CommonResource.App_YouAreNotOwner);
 
-        owner.DeactivateRestaurant(request.Id);
+        owner.ActivateRestaurant(request.Id);
         await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();

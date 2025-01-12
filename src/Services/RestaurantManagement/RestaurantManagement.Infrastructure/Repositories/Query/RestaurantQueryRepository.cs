@@ -14,7 +14,7 @@ public class RestaurantQueryRepository : BaseQueryRepository<RestaurantQuery>, I
         _dbContext = dbContext;
     }
 
-    public async Task<RestaurantQuery> GetByOwnerIdAsync(Guid ownerId, CancellationToken cancellationToken = default)
+    public async Task<RestaurantQuery?> GetByOwnerIdAsync(Guid ownerId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.GetCollection<RestaurantQuery>()
             .Find(Builders<RestaurantQuery>.Filter.Eq(x => x.OwnerId, ownerId))

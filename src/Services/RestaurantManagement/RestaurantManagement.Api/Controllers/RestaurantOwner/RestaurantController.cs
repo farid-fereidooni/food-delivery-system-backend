@@ -1,11 +1,11 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Dtos.Restaurant;
 using RestaurantManagement.Api.Helpers;
-using RestaurantManagement.Application.Command.Restaurants;
+using RestaurantManagement.Application.Command.RestaurantOwners.Restaurants;
+using RestaurantManagement.Application.Query.RestaurantOwners.Restaurants;
 
-namespace RestaurantManagement.Api.Controllers;
+namespace RestaurantManagement.Api.Controllers.RestaurantOwner;
 
 [ApiController]
 [Route("api/restaurant-owner/[controller]")]
@@ -17,6 +17,13 @@ public class RestaurantController : Controller
     public RestaurantController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("current")]
+    public async Task<IActionResult> GetRestaurant(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetMyRestaurantQuery(), cancellationToken);
+        return result.ToApiResponse();
     }
 
     [HttpPost]
@@ -43,7 +50,7 @@ public class RestaurantController : Controller
         [FromRoute]Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new ActivateRestaurantCommand(id), cancellationToken);
+        var result = await _mediator.Send(new ActivateMyRestaurantCommand(id), cancellationToken);
         return result.ToApiResponse();
     }
 
@@ -52,7 +59,7 @@ public class RestaurantController : Controller
         [FromRoute]Guid id,
         CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new DeactivateRestaurantCommand(id), cancellationToken);
+        var result = await _mediator.Send(new DeactivateMyRestaurantCommand(id), cancellationToken);
         return result.ToApiResponse();
     }
 }

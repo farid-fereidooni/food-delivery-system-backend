@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using RestaurantManagement.Application.Command.Restaurants;
+using RestaurantManagement.Application.Command.RestaurantOwners.Restaurants;
 using RestaurantManagement.Domain.Resources;
 
 namespace RestaurantManagement.Api.Dtos.Restaurant;
@@ -21,8 +21,8 @@ public record CreateRestaurantRequestDto
     [Required(ErrorMessage = nameof(CommonResource.Validation_FieldIsRequired))]
     public required  string ZipCode { get; init; }
 
-    public CreateRestaurantCommand ToCommand()
+    public CreateMyRestaurantCommand ToCommand()
     {
-        return new CreateRestaurantCommand(Name, Street, City, State, ZipCode);
+        return new CreateMyRestaurantCommand(Name, Street, City, State, ZipCode);
     }
 }

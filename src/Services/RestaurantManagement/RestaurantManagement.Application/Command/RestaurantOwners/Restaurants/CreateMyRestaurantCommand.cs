@@ -5,22 +5,22 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 using RestaurantManagement.Domain.ValueObjects;
 
-namespace RestaurantManagement.Application.Command.Restaurants;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Restaurants;
 
-public record CreateRestaurantCommand(
+public record CreateMyRestaurantCommand(
     string Name,
     string Street,
     string City,
     string State,
     string ZipCode) : ICommand<Result<EntityCreatedDto>>;
 
-public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCommand, Result<EntityCreatedDto>>
+public class CreateMyRestaurantCommandHandler : IRequestHandler<CreateMyRestaurantCommand, Result<EntityCreatedDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRestaurantOwnerCommandRepository _ownerRepository;
     private readonly IAuthService _authService;
 
-    public CreateRestaurantCommandHandler(
+    public CreateMyRestaurantCommandHandler(
         IUnitOfWork unitOfWork,
         IRestaurantOwnerCommandRepository ownerRepository,
         IAuthService authService)
@@ -31,7 +31,7 @@ public class CreateRestaurantCommandHandler : IRequestHandler<CreateRestaurantCo
     }
 
     public async Task<Result<EntityCreatedDto>> Handle(
-        CreateRestaurantCommand request, CancellationToken cancellationToken)
+        CreateMyRestaurantCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

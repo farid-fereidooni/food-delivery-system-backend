@@ -5,7 +5,7 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Models.Command.RestaurantAggregate;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.RestaurantOwners;
+namespace RestaurantManagement.Application.Command.Public.RestaurantOwners;
 
 public record CreateRestaurantOwnerCommand : ICommand<Result<EntityCreatedDto>>;
 

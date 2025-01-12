@@ -5,22 +5,22 @@ using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 using RestaurantManagement.Domain.ValueObjects;
 
-namespace RestaurantManagement.Application.Command.Menus;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Menus;
 
-public record AddMenuItemCommand(
+public record AddMyMenuItemCommand(
     Guid CategoryId,
     string Name,
     decimal Price,
     string? Description,
     Guid[] FoodTypeIds) : ICommand<Result<EntityCreatedDto>>;
 
-public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Result<EntityCreatedDto>>
+public class AddMyMenuItemCommandHandler : IRequestHandler<AddMyMenuItemCommand, Result<EntityCreatedDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCommandRepository _menuRepository;
     private readonly IAuthService _authService;
 
-    public AddMenuItemCommandHandler(
+    public AddMyMenuItemCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCommandRepository menuRepository,
         IAuthService authService)
@@ -30,8 +30,7 @@ public class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Res
         _authService = authService;
     }
 
-    public async Task<Result<EntityCreatedDto>> Handle(
-        AddMenuItemCommand request, CancellationToken cancellationToken)
+    public async Task<Result<EntityCreatedDto>> Handle(AddMyMenuItemCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

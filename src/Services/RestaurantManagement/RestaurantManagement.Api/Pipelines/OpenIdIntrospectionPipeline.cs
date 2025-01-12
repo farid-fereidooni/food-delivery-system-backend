@@ -44,21 +44,23 @@ public class RestaurantOwnerRequirement : IAuthorizationRequirement;
 
 public class RestaurantOwnerRequirementHandler : AuthorizationHandler<RestaurantOwnerRequirement>
 {
-    private readonly IRestaurantOwnerService _service;
-    private readonly IAuthService _authService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public RestaurantOwnerRequirementHandler(IRestaurantOwnerService service, IAuthService authService)
+    public RestaurantOwnerRequirementHandler(IServiceProvider serviceProvider)
     {
-        _service = service;
-        _authService = authService;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RestaurantOwnerRequirement requirement)
     {
-        var result = await _authService
+        using var scope = _serviceProvider.CreateScope();
+        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        var service = scope.ServiceProvider.GetRequiredService<IRestaurantOwnerService>();
+
+        var result = await authService
             .GetCurrentUserId()
             .Match(
-                id => _service.IsRestaurantOwner(id),
+                id => service.IsRestaurantOwner(id),
                 error => Task.FromResult(false));
 
         if (result)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Api.Dtos.FoodType;
 using RestaurantManagement.Api.Helpers;
 using RestaurantManagement.Application.Command.Admin;
+using RestaurantManagement.Application.Query.Admin;
 
 namespace RestaurantManagement.Api.Controllers.Admin;
 
@@ -17,6 +18,20 @@ public class FoodTypeController : Controller
     public FoodTypeController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetFoodTypes(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetFoodTypesAdminQuery(), cancellationToken);
+        return result.ToApiResponse();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetFoodType(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetFoodTypeAdminQuery(id), cancellationToken);
+        return result.ToApiResponse();
     }
 
     [HttpPost]

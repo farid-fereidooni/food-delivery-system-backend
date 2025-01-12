@@ -4,17 +4,17 @@ using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.Menus;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.Menus;
 
-public record DeleteMenuItemCommand(Guid MenuItemId) : ICommand<Result>;
+public record DeleteMyMenuItemCommand(Guid MenuItemId) : ICommand<Result>;
 
-public class DeleteMenuItemCommandHandler : IRequestHandler<DeleteMenuItemCommand, Result>
+public class DeleteMyMenuItemCommandHandler : IRequestHandler<DeleteMyMenuItemCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCommandRepository _menuRepository;
     private readonly IAuthService _authService;
 
-    public DeleteMenuItemCommandHandler(
+    public DeleteMyMenuItemCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCommandRepository menuRepository,
         IAuthService authService)
@@ -24,8 +24,7 @@ public class DeleteMenuItemCommandHandler : IRequestHandler<DeleteMenuItemComman
         _authService = authService;
     }
 
-    public async Task<Result> Handle(
-        DeleteMenuItemCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteMyMenuItemCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)

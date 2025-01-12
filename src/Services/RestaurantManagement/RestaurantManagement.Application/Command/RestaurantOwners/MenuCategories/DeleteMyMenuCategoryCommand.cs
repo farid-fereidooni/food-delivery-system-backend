@@ -4,17 +4,17 @@ using RestaurantManagement.Domain.Contracts.Command;
 using RestaurantManagement.Domain.Dtos;
 using RestaurantManagement.Domain.Resources;
 
-namespace RestaurantManagement.Application.Command.MenuCategories;
+namespace RestaurantManagement.Application.Command.RestaurantOwners.MenuCategories;
 
-public record UpdateMenuCategoryCommand(Guid Id, string Name) : ICommand<Result>;
+public record DeleteMyMenuCategoryCommand(Guid Id) : ICommand<Result>;
 
-public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCategoryCommand, Result>
+public class DeleteMyMenuCategoryCommandHandler : IRequestHandler<DeleteMyMenuCategoryCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCategoryCommandRepository _categoryRepository;
     private readonly IAuthService _authService;
 
-    public UpdateMenuCategoryCommandHandler(
+    public DeleteMyMenuCategoryCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCategoryCommandRepository categoryRepository,
         IAuthService authService)
@@ -24,8 +24,7 @@ public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCatego
         _authService = authService;
     }
 
-    public async Task<Result> Handle(
-        UpdateMenuCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteMyMenuCategoryCommand request, CancellationToken cancellationToken)
     {
         var currentUserResult = _authService.GetCurrentUserId();
         if (currentUserResult.IsFailure)
@@ -36,11 +35,7 @@ public class UpdateMenuCategoryCommandHandler : IRequestHandler<UpdateMenuCatego
         if (category is null || category.OwnerId != ownerId)
             return new Error(CommonResource.App_CategoryNotFound);
 
-        if (await _categoryRepository.ExistsWithNameAsync(
-                ownerId, request.Name, request.Id, cancellationToken: cancellationToken))
-            return new Error(CommonResource.App_CategoryAlreadyExists);
-
-        category.Rename(request.Name);
+        await _categoryRepository.DeleteAsync(category, cancellationToken);
         await _unitOfWork.SaveAsync(cancellationToken);
 
         return Result.Success();
