@@ -39,20 +39,36 @@ services:
             - system-sql
             - rabbit-mq
 
-    restaurant-management-api:
-        image: restaurant-management-api
+    restaurant-management-write-api:
+        image: restaurant-management-write-api
         build:
             context: .
-            dockerfile: Services/RestaurantManagement/RestaurantManagement.Api/Dockerfile
+            dockerfile: Services/RestaurantManagement/Write/RestaurantManagement.Write.Api/Dockerfile
         ports:
             - "5010:8080"
         environment:
             - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-            - ConnectionStrings__CommandDatabase=${RESTAURANT_MANAGEMENT_COMMAND_DB}
+            - ConnectionStrings__Database=${RESTAURANT_MANAGEMENT_COMMAND_DB}
         depends_on:
             - system-sql
             - rabbit-mq
+
+    restaurant-management-read-api:
+        image: restaurant-management-read-api
+        build:
+            context: .
+            dockerfile: Services/RestaurantManagement/Read/RestaurantManagement.Read.Api/Dockerfile
+        ports:
+            - "5015:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            - ConnectionStrings__Database=${RESTAURANT_MANAGEMENT_QUERY_DB}
+        depends_on:
+            - rabbit-mq
             - system-no-sql
+networks:
+    mongo:
+        driver: bridge
 
 volumes:
     system-sql-data:

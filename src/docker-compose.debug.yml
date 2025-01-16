@@ -6,6 +6,7 @@ services:
         environment:
             - ConnectionStrings__RelationalDatabase=Server=system-sql;port=5432;Database=identity;User Id=postgres;Password=postgres;
             - ASPNETCORE_ENVIRONMENT=Development
+
     restaurant-management-api:
         build:
             context: .

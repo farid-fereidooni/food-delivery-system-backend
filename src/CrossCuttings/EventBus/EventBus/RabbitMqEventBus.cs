@@ -60,9 +60,7 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
             await Connect(cancellationToken);
 
         await using var channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
-
-        await channel.ExchangeDeclareAsync(
-            topic, type: ExchangeType.Direct, durable: true, autoDelete: false, cancellationToken: cancellationToken);
+        await DeclareExchange(channel, topic, cancellationToken);
 
         await channel.BasicPublishAsync(topic, eventName, body: content, cancellationToken: cancellationToken);
     }
@@ -75,10 +73,19 @@ internal class RabbitMqEventBus : IEventBus, IDisposable
         foreach (var exchange in _eventBusConfiguration.Subscriptions)
         {
             var exchangeChannel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+            await DeclareExchange(exchangeChannel, exchange.Key, cancellationToken);
+
             _consumerChannels[exchange.Key] = exchangeChannel;
 
             await InitializeQueueAndConsume(exchange.Key, exchangeChannel, exchange.Value, cancellationToken);
         }
+    }
+
+    private async Task DeclareExchange(
+        IChannel channel, string exchangeName, CancellationToken cancellationToken = default)
+    {
+        await channel.ExchangeDeclareAsync(
+            exchangeName, type: ExchangeType.Direct, durable: true, autoDelete: false, cancellationToken: cancellationToken);
     }
 
     private async Task InitializeQueueAndConsume(
