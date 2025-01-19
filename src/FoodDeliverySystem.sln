@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus.Core", "CrossCutti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantManagement.Read.Test", "Services\RestaurantManagement\Read\RestaurantManagement.Read.Test\RestaurantManagement.Read.Test.csproj", "{633E0E6D-CC3B-4C6C-95E9-76386140206A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsiteBff", "ApiGateways\WebsiteBff\WebsiteBff.csproj", "{39FCE344-158F-436C-A791-BF3948449F43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,7 @@ Global
 		{965A4A95-E105-41A9-98E9-B15E00DF3842} = {0B5A06BE-79A7-4F46-B54B-2463662F1C9D}
 		{7F2F9906-D9BA-435D-8955-11859D810FC4} = {0B5A06BE-79A7-4F46-B54B-2463662F1C9D}
 		{BF2B02A5-9E48-4806-A1FE-280AD52947A3} = {0B5A06BE-79A7-4F46-B54B-2463662F1C9D}
+		{39FCE344-158F-436C-A791-BF3948449F43} = {93F14AD0-9AB2-402D-AC14-B7C2866E3BE3}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{05BA0E46-436D-4AB0-95C6-385A95629DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -140,5 +143,9 @@ Global
 		{BF2B02A5-9E48-4806-A1FE-280AD52947A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF2B02A5-9E48-4806-A1FE-280AD52947A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF2B02A5-9E48-4806-A1FE-280AD52947A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39FCE344-158F-436C-A791-BF3948449F43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39FCE344-158F-436C-A791-BF3948449F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39FCE344-158F-436C-A791-BF3948449F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39FCE344-158F-436C-A791-BF3948449F43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
