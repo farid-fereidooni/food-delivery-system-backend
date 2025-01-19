@@ -1,11 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
-ARG BUILD_CONFIGURATION=Debug
-ENV ASPNETCORE_ENVIRONMENT=Development
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
 EXPOSE 8080
 
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
 COPY ["CrossCuttings/EventBus/EventBus.Core/EventBus.Core.csproj", "CrossCuttings/EventBus/EventBus.Core/"]
 COPY ["CrossCuttings/EventBus/EventBus/EventBus.csproj", "CrossCuttings/EventBus/EventBus/"]
 
@@ -33,11 +31,15 @@ COPY ["FoodDeliverySystem.sln", "."]
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet restore "FoodDeliverySystem.sln" --verbosity n
 
-COPY ["CrossCuttings", "CrossCuttings"]
-COPY ["Services/RestaurantManagement", "Services/RestaurantManagement"]
+COPY ["ApiGateways/WebsiteBff", "ApiGateways/WebsiteBff"]
 
-WORKDIR "/src/Services/RestaurantManagement/Read/RestaurantManagement.Read.Api"
+FROM build AS publish
+WORKDIR "/src/ApiGateways/WebsiteBff"
+ARG BUILD_CONFIGURATION=Release
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet build -c $BUILD_CONFIGURATION
+    dotnet publish "WebsiteBff.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
 
-ENTRYPOINT ["dotnet", "run", "--no-build", "--no-launch-profile", "--"]
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "WebsiteBff.dll"]

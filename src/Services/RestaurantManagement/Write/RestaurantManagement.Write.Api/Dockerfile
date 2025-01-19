@@ -23,6 +23,8 @@ COPY ["Services/RestaurantManagement/Read/RestaurantManagement.Read.Core/Restaur
 COPY ["Services/RestaurantManagement/Read/RestaurantManagement.Read.Infrastructure/RestaurantManagement.Read.Infrastructure.csproj", "Services/RestaurantManagement/Read/RestaurantManagement.Read.Infrastructure/"]
 COPY ["Services/RestaurantManagement/Read/RestaurantManagement.Read.Test/RestaurantManagement.Read.Test.csproj", "Services/RestaurantManagement/Read/RestaurantManagement.Read.Test/"]
 
+COPY ["ApiGateways/WebsiteBff/WebsiteBff.csproj", "ApiGateways/WebsiteBff/"]
+
 COPY ["docker-compose.dcproj", "."]
 COPY ["FoodDeliverySystem.sln", "."]
 
