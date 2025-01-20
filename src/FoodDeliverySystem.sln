@@ -50,6 +50,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantManagement.Read.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsiteBff", "ApiGateways\WebsiteBff\WebsiteBff.csproj", "{39FCE344-158F-436C-A791-BF3948449F43}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1F9D1C3D-E89F-46B7-9B18-B3CA5A815609}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantManagement.Shared", "Services\RestaurantManagement\Shared\RestaurantManagement.Shared\RestaurantManagement.Shared.csproj", "{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,8 @@ Global
 		{7F2F9906-D9BA-435D-8955-11859D810FC4} = {0B5A06BE-79A7-4F46-B54B-2463662F1C9D}
 		{BF2B02A5-9E48-4806-A1FE-280AD52947A3} = {0B5A06BE-79A7-4F46-B54B-2463662F1C9D}
 		{39FCE344-158F-436C-A791-BF3948449F43} = {93F14AD0-9AB2-402D-AC14-B7C2866E3BE3}
+		{1F9D1C3D-E89F-46B7-9B18-B3CA5A815609} = {C8CBDA51-3356-46ED-A12B-4007B3FB69A5}
+		{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D} = {1F9D1C3D-E89F-46B7-9B18-B3CA5A815609}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{05BA0E46-436D-4AB0-95C6-385A95629DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -147,5 +153,9 @@ Global
 		{39FCE344-158F-436C-A791-BF3948449F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39FCE344-158F-436C-A791-BF3948449F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39FCE344-158F-436C-A791-BF3948449F43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C45080D-9DFC-4E3B-9DD2-D6B2BF6AF74D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

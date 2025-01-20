@@ -3,6 +3,7 @@ using RestaurantManagement.Write.Domain.Contracts;
 using RestaurantManagement.Write.Domain.Contracts.Repositories;
 using RestaurantManagement.Write.Domain.Dtos;
 using RestaurantManagement.Write.Domain.Models.FoodTypeAggregate;
+using RestaurantManagement.Shared.Resources;
 
 namespace RestaurantManagement.Write.Application.Command.Admin;
 
@@ -24,8 +25,10 @@ public class CreateFoodTypeAdminCommandHandler : IRequestHandler<CreateFoodTypeA
     public async Task<Result<EntityCreatedDto>> Handle(
         CreateFoodTypeAdminCommand request, CancellationToken cancellationToken)
     {
-        var foodType = new FoodType(request.Name);
+        if (await _foodTypeRepository.ExistsWithNameAsync(request.Name, cancellationToken: cancellationToken))
+            return new Error(CommonResource.App_FoodTypeAlreadyExists);
 
+        var foodType = new FoodType(request.Name);
         await _foodTypeRepository.AddAsync(foodType, cancellationToken);
         await _unitOfWork.SaveAsync(cancellationToken);
 

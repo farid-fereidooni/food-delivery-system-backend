@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using RestaurantManagement.Read.Api.Filters;
-using RestaurantManagement.Read.Domain.Resources;
+using RestaurantManagement.Shared.Resources;
 
 namespace RestaurantManagement.Read.Api.Pipelines;
 

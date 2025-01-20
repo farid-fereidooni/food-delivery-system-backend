@@ -1,8 +1,8 @@
+using RestaurantManagement.Shared.Resources;
 using RestaurantManagement.Write.Domain.Contracts;
 using RestaurantManagement.Write.Domain.DomainEvents.Restaurants;
 using RestaurantManagement.Write.Domain.Dtos;
 using RestaurantManagement.Write.Domain.Exceptions;
-using RestaurantManagement.Write.Domain.Resources;
 using RestaurantManagement.Write.Domain.ValueObjects;
 
 namespace RestaurantManagement.Write.Domain.Models.RestaurantAggregate;

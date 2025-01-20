@@ -2,7 +2,7 @@ using MediatR;
 using RestaurantManagement.Write.Domain.Contracts;
 using RestaurantManagement.Write.Domain.Contracts.Repositories;
 using RestaurantManagement.Write.Domain.Dtos;
-using RestaurantManagement.Write.Domain.Resources;
+using RestaurantManagement.Shared.Resources;
 
 namespace RestaurantManagement.Write.Application.Command.Admin;
 
@@ -27,6 +27,9 @@ public class UpdateFoodTypeAdminCommandHandler : IRequestHandler<UpdateFoodTypeA
         var foodType = await _foodTypeRepository.GetByIdAsync(request.Id, cancellationToken);
         if (foodType is null)
             return new Error(CommonResource.App_FoodNotFound).WithReason(ErrorReason.NotFound);
+
+        if (await _foodTypeRepository.ExistsWithNameAsync(request.Name, request.Id, cancellationToken))
+            return new Error(CommonResource.App_FoodTypeAlreadyExists);
 
         foodType.Rename(request.Name);
         await _unitOfWork.SaveAsync(cancellationToken);

@@ -87,4 +87,7 @@
     <data name="App_RestaurantNotFound" xml:space="preserve">
         <value>Restaurant not found.</value>
     </data>
+    <data name="App_FoodTypeAlreadyExists" xml:space="preserve">
+        <value>Food type name already exists.</value>
+    </data>
 </root>

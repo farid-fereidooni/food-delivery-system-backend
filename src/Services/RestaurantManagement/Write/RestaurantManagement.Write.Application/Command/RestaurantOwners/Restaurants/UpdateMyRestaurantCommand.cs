@@ -2,7 +2,7 @@ using MediatR;
 using RestaurantManagement.Write.Domain.Contracts;
 using RestaurantManagement.Write.Domain.Contracts.Repositories;
 using RestaurantManagement.Write.Domain.Dtos;
-using RestaurantManagement.Write.Domain.Resources;
+using RestaurantManagement.Shared.Resources;
 using RestaurantManagement.Write.Domain.ValueObjects;
 
 namespace RestaurantManagement.Write.Application.Command.RestaurantOwners.Restaurants;

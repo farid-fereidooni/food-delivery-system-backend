@@ -7,7 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RestaurantManagement.Read.Domain.Resources {
+namespace RestaurantManagement.Shared.Resources {
+    using System;
+    
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +28,7 @@ namespace RestaurantManagement.Read.Domain.Resources {
         public static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("RestaurantManagement.Read.Domain.Resources.CommonResource", typeof(CommonResource).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("RestaurantManagement.Shared.Resources.CommonResource", typeof(CommonResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -177,6 +180,12 @@ namespace RestaurantManagement.Read.Domain.Resources {
         public static string App_RestaurantNotFound {
             get {
                 return ResourceManager.GetString("App_RestaurantNotFound", resourceCulture);
+            }
+        }
+        
+        public static string App_FoodTypeAlreadyExists {
+            get {
+                return ResourceManager.GetString("App_FoodTypeAlreadyExists", resourceCulture);
             }
         }
     }

@@ -25,4 +25,15 @@ public class FoodTypeRepository : BaseRepository<FoodType>, IFoodTypeRepository
     {
         return await _dbContext.FoodTypes.Where(f => id.Contains(f.Id)).CountAsync(cancellationToken) == id.Count();
     }
+
+    public async Task<bool> ExistsWithNameAsync(
+        string name, Guid? excludeId = null, CancellationToken cancellationToken = default)
+    {
+        var query = _dbContext.FoodTypes.Where(f => f.Name.ToLower() == name.ToLower().Trim());
+
+        if (excludeId is not null)
+            query = query.Where(f => f.Id != excludeId.Value);
+
+        return await query.AnyAsync(cancellationToken);
+    }
 }

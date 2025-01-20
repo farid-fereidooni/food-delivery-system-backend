@@ -3,7 +3,7 @@ using RestaurantManagement.Read.Domain.Contracts;
 using RestaurantManagement.Read.Domain.Contracts.Repositories;
 using RestaurantManagement.Read.Domain.Dtos;
 using RestaurantManagement.Read.Domain.Models;
-using RestaurantManagement.Read.Domain.Resources;
+using RestaurantManagement.Shared.Resources;
 
 namespace RestaurantManagement.Read.Application.Query.RestaurantOwners.MenuCategories;
 

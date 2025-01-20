@@ -1,6 +1,6 @@
 using RestaurantManagement.Read.Domain.Contracts;
 using RestaurantManagement.Read.Domain.Dtos;
-using RestaurantManagement.Read.Domain.Resources;
+using RestaurantManagement.Shared.Resources;
 
 namespace RestaurantManagement.Read.Api.Services;
 
