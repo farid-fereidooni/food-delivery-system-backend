@@ -38,6 +38,8 @@ services:
         depends_on:
             - system-sql
             - rabbit-mq
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 
     restaurant-management-write-api:
         image: restaurant-management-write-api
@@ -50,10 +52,12 @@ services:
             - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
             - ConnectionStrings__Database=${RESTAURANT_MANAGEMENT_COMMAND_DB}
             - EventBusConfiguration__Host=rabbit-mq
-            - IdentityConfiguration__Issuer=http://identity-api
+            - IdentityConfiguration__Issuer=${IDENTITY_PUBLIC_ADDRESS}
         depends_on:
             - system-sql
             - rabbit-mq
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 
     restaurant-management-read-api:
         image: restaurant-management-read-api
@@ -66,10 +70,12 @@ services:
             - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
             - ConnectionStrings__Database=${RESTAURANT_MANAGEMENT_QUERY_DB}
             - EventBusConfiguration__Host=rabbit-mq
-            - IdentityConfiguration__Issuer=http://identity-api
+            - IdentityConfiguration__Issuer=${IDENTITY_PUBLIC_ADDRESS}
         depends_on:
             - rabbit-mq
             - system-no-sql
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 
     website-bff:
         image: website-bff
@@ -80,6 +86,8 @@ services:
             - "5500:8080"
         environment:
             - ASPNETCORE_ENVIRONMENT=Compose
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 networks:
     mongo:
         driver: bridge

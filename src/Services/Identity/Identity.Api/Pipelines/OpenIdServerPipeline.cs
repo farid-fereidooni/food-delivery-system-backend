@@ -34,6 +34,15 @@ public static class OpenIdServerPipeline
 
                 if (builder.Environment.IsDevelopment())
                 {
+                    Console.WriteLine();
+                    options.Configure(config => config.TokenValidationParameters.ValidIssuers =
+                    [
+                        "http://localhost:5000/"
+                    ]);
+                }
+
+                if (builder.Environment.IsDevelopment())
+                {
                     options
                         .AddDevelopmentEncryptionCertificate()
                         .AddDevelopmentSigningCertificate()

@@ -13,12 +13,10 @@ builder.Services.AddReverseProxy()
 builder.Services.AddControllers();
 var app = builder.Build();
 
+app.UseSwagger();
+app.UseClusterSwaggerUi();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseClusterSwaggerUi();
-}
 app.MapReverseProxy();
+app.MapGet("/", () => Results.Content("Up"));
 
 app.Run();
