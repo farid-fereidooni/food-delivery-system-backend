@@ -188,5 +188,17 @@ namespace RestaurantManagement.Shared.Resources {
                 return ResourceManager.GetString("App_FoodTypeAlreadyExists", resourceCulture);
             }
         }
+        
+        public static string App_FoodTypeUsed {
+            get {
+                return ResourceManager.GetString("App_FoodTypeUsed", resourceCulture);
+            }
+        }
+        
+        public static string App_MenuCategoryUsed {
+            get {
+                return ResourceManager.GetString("App_MenuCategoryUsed", resourceCulture);
+            }
+        }
     }
 }

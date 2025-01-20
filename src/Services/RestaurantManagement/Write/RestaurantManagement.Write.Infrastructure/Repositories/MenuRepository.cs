@@ -38,4 +38,9 @@ public class MenuRepository : BaseRepository<Menu>, IMenuRepository
     {
         return await _dbContext.MenuItems.AnyAsync(m => m.CategoryId == menuCategoryId, cancellationToken);
     }
+
+    public async Task<bool> AnyMenuItemWithFoodTypeAsync(Guid foodTypeId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Set<FoodTypeMenuItem>().AnyAsync(m => m.FoodTypeId == foodTypeId, cancellationToken);
+    }
 }

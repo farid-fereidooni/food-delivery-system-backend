@@ -24,7 +24,6 @@ public class RestaurantDenormalizationHandler :
     IEventHandler<MenuItemStockUpdatedDenormalizationEvent>,
     IEventHandler<MenuCategoryUpdatedDenormalizationEvent>,
     IEventHandler<FoodTypeUpdatedDenormalizationEvent>
-
 {
     private readonly IRestaurantRepository _repository;
     private readonly IMenuCategoryRepository _menuCategoryRepository;

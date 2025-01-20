@@ -8,7 +8,8 @@ namespace RestaurantManagement.Read.Application.DenormalizationEventHandlers;
 
 public class MenuCategoryDenormalizationHandler :
     IEventHandler<MenuCategoryCreatedDenormalizationEvent>,
-    IEventHandler<MenuCategoryUpdatedDenormalizationEvent>
+    IEventHandler<MenuCategoryUpdatedDenormalizationEvent>,
+    IEventHandler<MenuCategoryRemovedDenormalizationEvent>
 {
     private readonly IMenuCategoryRepository _repository;
     private readonly ILogger<MenuCategoryDenormalizationHandler> _logger;
@@ -55,4 +56,8 @@ public class MenuCategoryDenormalizationHandler :
         await _repository.UpdateAsync(category, cancellationToken);
     }
 
+    public async Task HandleAsync(MenuCategoryRemovedDenormalizationEvent @event, CancellationToken cancellationToken = default)
+    {
+        await _repository.DeleteByIdAsync(@event.MenuCategoryId, cancellationToken);
+    }
 }

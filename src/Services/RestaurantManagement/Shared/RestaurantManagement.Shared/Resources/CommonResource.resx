@@ -90,4 +90,10 @@
     <data name="App_FoodTypeAlreadyExists" xml:space="preserve">
         <value>Food type name already exists.</value>
     </data>
+    <data name="App_FoodTypeUsed" xml:space="preserve">
+        <value>Food type is used in menu items.</value>
+    </data>
+    <data name="App_MenuCategoryUsed" xml:space="preserve">
+        <value>Menu category is used in menu items.</value>
+    </data>
 </root>

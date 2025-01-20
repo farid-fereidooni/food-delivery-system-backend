@@ -22,4 +22,9 @@ public class FoodType : AggregateRoot
         Name = newName;
         AddDomainEvent(new FoodTypeUpdatedEvent(Id, Name));
     }
+
+    public void HandleRemoval()
+    {
+        AddDomainEvent(new FoodTypeRemovedEvent(Id));
+    }
 }

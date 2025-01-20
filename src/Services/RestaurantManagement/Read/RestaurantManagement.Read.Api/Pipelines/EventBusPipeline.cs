@@ -28,11 +28,17 @@ public static class EventBusPipeline
             .AddSubscription<MenuCategoryUpdatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<MenuCategoryDenormalizationHandler>()
                 .AddHandler<RestaurantDenormalizationHandler>()
+            .AddSubscription<MenuCategoryRemovedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
+                .AddHandler<MenuCategoryDenormalizationHandler>()
+
             .AddSubscription<FoodTypeCreatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<FoodTypeDenormalizationHandler>()
             .AddSubscription<FoodTypeUpdatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<FoodTypeDenormalizationHandler>()
                 .AddHandler<RestaurantDenormalizationHandler>()
+            .AddSubscription<FoodTypeRemovedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
+                .AddHandler<FoodTypeDenormalizationHandler>()
+
             .AddSubscription<MenuCreatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<RestaurantDenormalizationHandler>()
             .AddSubscription<MenuItemAddedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
@@ -45,6 +51,7 @@ public static class EventBusPipeline
                 .AddHandler<RestaurantDenormalizationHandler>()
             .AddSubscription<MenuItemStockUpdatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<RestaurantDenormalizationHandler>()
+
             .AddSubscription<RestaurantCreatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)
                 .AddHandler<RestaurantDenormalizationHandler>()
             .AddSubscription<RestaurantUpdatedDenormalizationEvent>(denormalizationBroker, denormalizationQueue)

@@ -22,6 +22,11 @@ public class MenuCategory : AggregateRoot
         AddDomainEvent(new MenuCategoryUpdatedEvent(Id, newName));
     }
 
+    public void HandleRemoval()
+    {
+        AddDomainEvent(new MenuCategoryRemovedEvent(Id));
+    }
+
     public Guid OwnerId { get; private set; }
     public string Name { get; private set; } = null!;
 }

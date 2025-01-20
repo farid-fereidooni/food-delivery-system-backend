@@ -8,7 +8,8 @@ namespace RestaurantManagement.Read.Application.DenormalizationEventHandlers;
 
 public class FoodTypeDenormalizationHandler:
     IEventHandler<FoodTypeCreatedDenormalizationEvent>,
-    IEventHandler<FoodTypeUpdatedDenormalizationEvent>
+    IEventHandler<FoodTypeUpdatedDenormalizationEvent>,
+    IEventHandler<FoodTypeRemovedDenormalizationEvent>
 {
     private readonly IFoodTypeRepository _repository;
     private readonly ILogger<FoodTypeDenormalizationHandler> _logger;
@@ -49,5 +50,10 @@ public class FoodTypeDenormalizationHandler:
 
         foodType.Name = @event.Name;
         await _repository.UpdateAsync(foodType, cancellationToken);
+    }
+
+    public async Task HandleAsync(FoodTypeRemovedDenormalizationEvent @event, CancellationToken cancellationToken = default)
+    {
+        await _repository.DeleteByIdAsync(@event.Id, cancellationToken);
     }
 }

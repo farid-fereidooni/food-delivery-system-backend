@@ -12,15 +12,18 @@ public class DeleteMyMenuCategoryCommandHandler : IRequestHandler<DeleteMyMenuCa
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMenuCategoryRepository _categoryRepository;
+    private readonly IMenuRepository _menuRepository;
     private readonly IAuthService _authService;
 
     public DeleteMyMenuCategoryCommandHandler(
         IUnitOfWork unitOfWork,
         IMenuCategoryRepository categoryRepository,
+        IMenuRepository menuRepository,
         IAuthService authService)
     {
         _unitOfWork = unitOfWork;
         _categoryRepository = categoryRepository;
+        _menuRepository = menuRepository;
         _authService = authService;
     }
 
@@ -34,6 +37,11 @@ public class DeleteMyMenuCategoryCommandHandler : IRequestHandler<DeleteMyMenuCa
         var category = await _categoryRepository.GetByIdAsync(request.Id, cancellationToken);
         if (category is null || category.OwnerId != ownerId)
             return new Error(CommonResource.App_CategoryNotFound);
+
+        if (await _menuRepository.AnyMenuItemWithCategoryAsync(request.Id, cancellationToken))
+            return new Error(CommonResource.App_MenuCategoryUsed);
+
+        category.HandleRemoval();
 
         await _categoryRepository.DeleteAsync(category, cancellationToken);
         await _unitOfWork.SaveAsync(cancellationToken);
