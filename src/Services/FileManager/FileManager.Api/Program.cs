@@ -1,8 +1,5 @@
 using EventBus.Registration;
-using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Write.Api.Pipelines;
-using RestaurantManagement.Write.Api.Services;
-using RestaurantManagement.Write.Domain.Contracts;
+using FileManager.Api.Pipelines;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,16 +7,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.AddCustomSwagger();
 
 builder.AddInfrastructureServices();
-builder.AddCoreServices();
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.AddCustomOpenIdServer();
 builder.AddEventBus();
-builder.AddDomainServices();
+
 builder.AddApplicationServices();
 builder.AddCustomControllers();
-
-builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
 
 var app = builder.Build();
 
