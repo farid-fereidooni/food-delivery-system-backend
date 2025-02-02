@@ -1,5 +1,6 @@
 using EventBus.Logging;
 using EventBus.Models;
+using FileManager.Core.Contracts;
 using FileManager.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -7,7 +8,7 @@ using File = FileManager.Core.Models.File;
 
 namespace FileManager.Infrastructure.Database;
 
-public class AppDbContext(DbContextOptions options) : DbContext(options), IEventLogUnitOfWork
+public class AppDbContext(DbContextOptions options) : DbContext(options), IUnitOfWork, IEventLogUnitOfWork
 {
     public DbSet<File> Files { get; set; }
     public DbSet<EventLog> EventLogs { get; set; }
@@ -22,6 +23,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options), IEvent
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         modelBuilder.ApplyDefaultConfigurations();
+
+        var fileModelBuilder = modelBuilder.Entity<File>();
+        fileModelBuilder.Ignore(p => p.Extension);
+        fileModelBuilder.Ignore(p => p.UnixPermission);
+        fileModelBuilder.HasIndex(p => new { p.OwnerId, p.OwnerPermission});
+        fileModelBuilder.HasIndex(p => new { p.Group, p.GroupPermission });
+        fileModelBuilder.HasIndex(p => new { p.IsTemporary });
 
         modelBuilder.AddEventLogs();
     }

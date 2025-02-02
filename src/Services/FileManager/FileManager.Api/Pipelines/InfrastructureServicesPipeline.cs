@@ -1,3 +1,4 @@
+using FileManager.Core.Contracts;
 using FileManager.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ public static class InfrastructureServicesPipeline
         builder.Services.AddDbContext<AppDbContext>(dbBuilder => dbBuilder
             .UseNpgsql(builder.Configuration.GetConnectionString("Database"))
             .UseSnakeCaseNamingConvention());
+
+        builder.Services.AddScoped<IUnitOfWork>(f => f.GetRequiredService<AppDbContext>());
 
         builder.Services.Scan(scan => scan
             .FromAssemblyOf<DbContext>()
