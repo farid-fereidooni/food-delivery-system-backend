@@ -29,9 +29,6 @@
         <Content Include="..\..\..\..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
-        <None Update="Dockerfile.debug">
-            <DependentUpon>Dockerfile</DependentUpon>
-        </None>
     </ItemGroup>
 
     <ItemGroup>

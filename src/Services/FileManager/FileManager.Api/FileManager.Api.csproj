@@ -29,6 +29,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="..\..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\FileManager.Core\FileManager.Core.csproj" />
       <ProjectReference Include="..\FileManager.Infrastructure\FileManager.Infrastructure.csproj" />
     </ItemGroup>

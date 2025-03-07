@@ -38,15 +38,15 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet restore "FoodDeliverySystem.sln" --verbosity n
 
 COPY ["CrossCuttings", "CrossCuttings"]
-COPY ["Services/Identity", "Services/Identity"]
+COPY ["Services/FileManager", "Services/FileManager"]
 
 FROM build AS publish
-WORKDIR "/src/Services/Identity/Identity.Api"
+WORKDIR "/src/Services/FileManager/FileManager.Api"
 ARG BUILD_CONFIGURATION=Release
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet publish "Identity.Api.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
+    dotnet publish "FileManager.Api.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Identity.Api.dll"]
+ENTRYPOINT ["dotnet", "FileManager.Api.dll"]

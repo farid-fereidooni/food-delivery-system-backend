@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+{{RESTORE_PROJECTS}}
+
+COPY ["docker-compose.dcproj", "."]
+COPY ["FoodDeliverySystem.sln", "."]
+
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore "FoodDeliverySystem.sln" --verbosity n
+
+COPY ["CrossCuttings", "CrossCuttings"]
+{{SOURCE_COPY}}
+
+FROM build AS publish
+WORKDIR {{BUILD_WORKDIR}}
+ARG BUILD_CONFIGURATION=Release
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish {{PROJECT_FILE}} -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", {{DLL_FILE}}]
