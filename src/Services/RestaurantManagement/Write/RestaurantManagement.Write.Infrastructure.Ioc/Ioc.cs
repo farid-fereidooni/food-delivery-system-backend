@@ -1,12 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RestaurantManagement.Write.Domain.Contracts;
 using DbContext = RestaurantManagement.Write.Infrastructure.Database.DbContext;
 
-namespace RestaurantManagement.Write.Api.Pipelines;
 
-public static class InfrastructureServicesPipeline
+namespace RestaurantManagement.Write.Infrastructure.Ioc;
+
+public static class Ioc
 {
-    public static WebApplicationBuilder AddInfrastructureServices(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddDbContext<DbContext>(dbBuilder => dbBuilder
             .UseNpgsql(builder.Configuration.GetConnectionString("Database"))
@@ -23,7 +27,6 @@ public static class InfrastructureServicesPipeline
                 .AsMatchingInterface()
                 .WithScopedLifetime());
 
-        builder.Services.AddHttpContextAccessor();
         return builder;
     }
 }

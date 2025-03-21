@@ -2,7 +2,10 @@ using EventBus.Registration;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Write.Api.Pipelines;
 using RestaurantManagement.Write.Api.Services;
+using RestaurantManagement.Write.Application.Ioc;
+using RestaurantManagement.Write.Domain.Ioc;
 using RestaurantManagement.Write.Domain.Contracts;
+using RestaurantManagement.Write.Infrastructure.Ioc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,9 @@ builder.AddCustomSwagger();
 
 builder.AddInfrastructureServices();
 builder.AddCoreServices();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.AddCustomOpenIdServer();
 builder.AddEventBus();
