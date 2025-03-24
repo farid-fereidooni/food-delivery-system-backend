@@ -87,6 +87,22 @@ public class DbContext(DbContextOptions options, IMediator _mediator)
         }
     }
 
+    public string GetTableName<TEntity>()
+    {
+        var entityType = typeof(TEntity);
+        var modelEntityType = Model.FindEntityType(entityType);
+
+        if (modelEntityType == null)
+            throw new Exception("Invalid entity type");
+
+        var tableName = modelEntityType.GetSchemaQualifiedTableName();
+
+        if (tableName == null)
+            throw new Exception("Invalid entity type");
+
+        return tableName;
+    }
+
     private void UpdateTimeStamps()
     {
         var now = DateTime.UtcNow;

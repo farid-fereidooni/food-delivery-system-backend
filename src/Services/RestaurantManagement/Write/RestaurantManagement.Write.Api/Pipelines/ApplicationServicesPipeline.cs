@@ -10,7 +10,7 @@ public static class ApplicationServicesPipeline
     {
         builder.Services.AddMediatR(config => config
             .RegisterServicesFromAssembly(typeof(ICommand).Assembly));
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(EventPublishBehavior<,>));
+        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
         return builder;
     }

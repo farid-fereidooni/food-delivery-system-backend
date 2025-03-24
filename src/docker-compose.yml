@@ -7,6 +7,9 @@ services:
             - system-sql-data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
+        command: |
+            postgres
+            -c wal_level=logical
 
     system-no-sql:
         image: mongo
@@ -55,6 +58,20 @@ services:
             - IdentityConfiguration__Issuer=${IDENTITY_PUBLIC_ADDRESS}
         depends_on:
             - system-sql
+            - rabbit-mq
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    restaurant-management-write-worker:
+        image: restaurant-management-write-worker
+        build:
+            context: .
+            dockerfile: Services/RestaurantManagement/Write/RestaurantManagement.Write.Worker/Dockerfile
+        environment:
+            - DOTNET_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            - ConnectionStrings__Database=${RESTAURANT_MANAGEMENT_COMMAND_DB}
+            - EventBusConfiguration__Host=rabbit-mq
+        depends_on:
             - rabbit-mq
         extra_hosts:
             - "host.docker.internal:host-gateway"

@@ -38,11 +38,11 @@ public class EventLogService : IEventLogService
         });
     }
 
-    public async Task<IEnumerable<Message>> GetFailedEvents(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Message>> GetPendingEvents(CancellationToken cancellationToken = default)
     {
         var logs = await _unitOfWork.EventLogs
             .OrderBy(x => x.EventDate)
-            .Where(e => e.State == EventStateEnum.PublishedFailed)
+            .Where(e => e.State == EventStateEnum.NotPublished || e.State == EventStateEnum.PublishedFailed)
             .ToListAsync(cancellationToken);
 
         return logs.Select(s => new Message

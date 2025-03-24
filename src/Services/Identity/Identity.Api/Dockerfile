@@ -30,6 +30,7 @@ COPY ["Services/RestaurantManagement/Write/RestaurantManagement.Write.Applicatio
 COPY ["Services/RestaurantManagement/Write/RestaurantManagement.Write.Domain/RestaurantManagement.Write.Domain.csproj", "Services/RestaurantManagement/Write/RestaurantManagement.Write.Domain/"]
 COPY ["Services/RestaurantManagement/Write/RestaurantManagement.Write.Infrastructure/RestaurantManagement.Write.Infrastructure.csproj", "Services/RestaurantManagement/Write/RestaurantManagement.Write.Infrastructure/"]
 COPY ["Services/RestaurantManagement/Write/RestaurantManagement.Write.Test/RestaurantManagement.Write.Test.csproj", "Services/RestaurantManagement/Write/RestaurantManagement.Write.Test/"]
+COPY ["Services/RestaurantManagement/Write/RestaurantManagement.Write.Worker/RestaurantManagement.Write.Worker.csproj", "Services/RestaurantManagement/Write/RestaurantManagement.Write.Worker/"]
 
 COPY ["docker-compose.dcproj", "."]
 COPY ["FoodDeliverySystem.sln", "."]

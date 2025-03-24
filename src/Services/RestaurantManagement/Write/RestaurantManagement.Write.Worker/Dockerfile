@@ -42,12 +42,12 @@ COPY ["CrossCuttings", "CrossCuttings"]
 COPY ["Services/RestaurantManagement", "Services/RestaurantManagement"]
 
 FROM build AS publish
-WORKDIR "/src/Services/RestaurantManagement/Write/RestaurantManagement.Write.Api"
+WORKDIR "/src/Services/RestaurantManagement/Write/RestaurantManagement.Write.Worker"
 ARG BUILD_CONFIGURATION=Release
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet publish "RestaurantManagement.Write.Api.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
+    dotnet publish "RestaurantManagement.Write.Worker.csproj" -c $BUILD_CONFIGURATION -o /app /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "RestaurantManagement.Write.Api.dll"]
+ENTRYPOINT ["dotnet", "RestaurantManagement.Write.Worker.dll"]
