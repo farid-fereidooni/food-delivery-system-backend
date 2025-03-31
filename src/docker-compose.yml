@@ -38,6 +38,8 @@ services:
         environment:
             - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
             - ConnectionStrings__RelationalDatabase=${IDENTITY_DB}
+            - IdentityConfiguration__IdentityPublicAddress=${IDENTITY_PUBLIC_ADDRESS}
+
         depends_on:
             - system-sql
             - rabbit-mq

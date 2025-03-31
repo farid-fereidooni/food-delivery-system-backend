@@ -34,11 +34,17 @@ public static class OpenIdServerPipeline
 
                 if (builder.Environment.IsDevelopment())
                 {
-                    Console.WriteLine();
-                    options.Configure(config => config.TokenValidationParameters.ValidIssuers =
+                    List<string> validIssuers =
                     [
-                        "http://localhost:5000/"
-                    ]);
+                        "http://localhost:5000/",
+                    ];
+
+                    var identityPublicAddress =
+                        identityConfiguration[nameof(IdentityConfiguration.IdentityPublicAddress)];
+                    if (!string.IsNullOrWhiteSpace(identityPublicAddress))
+                        validIssuers.Add(identityPublicAddress.TrimEnd('/') + '/');
+
+                    options.Configure(config => config.TokenValidationParameters.ValidIssuers = validIssuers);
                 }
 
                 if (builder.Environment.IsDevelopment())
